@@ -10,8 +10,6 @@ jobs:
     name: Jest tests
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
       - name: test with jest
         uses: actions/setup-node@v3
         with:
@@ -43,5 +41,5 @@ jobs:
           gcloud run deploy ${{ secrets.CLOUDRUN_SERVICE }} \
             --source=./ --region=${{ secrets.CLOUDRUN_SERVICE_REGION }} --port=${{ secrets.CLOUDRUN_SERVICE_PORT }} \
             --update-secrets=${{ secrets.BUCKET_VIEWER_SA_KEY_FILE_NAME }}=BUCKET_VIEWER_SA_KEY:latest,${{ secrets.SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME }}=SUPABASE_POSTGRES_ROOT_CERT:latest,${{ secrets.PUBSUB_PUBLISHER_SA_KEY_FILE_NAME }}=PUBSUB_PUBLISHER_SA_KEY:latest \
-            --set-env-vars=BUCKET_VIEWER_SA_KEY_FILE_NAME=${{ secrets.BUCKET_VIEWER_SA_KEY_FILE_NAME }},NODE_ENV=production,BLOG_POSTS_BUCKET=${{ secrets.BLOG_POSTS_BUCKET }},SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME=${{ secrets.SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME }},PGHOST=${{ secrets.PGHOST }},PGPASSWORD=${{ secrets.PGPASSWORD }},PGPORT=${{ secrets.PGPORT }},PGSSLMODE=require,PGUSER=${{ secrets.PGUSER }},PGDATABASE=${{ secrets.PGDATABASE }},JWT_SECRET=${{ secrets.JWT_SECRET }},PUBSUB_USERS_TOPIC=${{ secrets.PUBSUB_USERS_TOPIC }},PUBSUB_PUBLISHER_SA_KEY_FILE_NAME=${{ secrets.PUBSUB_PUBLISHER_SA_KEY_FILE_NAME }},GCP_PROJECT_ID=${{ secrets.GPC_PROJECT_ID }},IMAGES_BUCKET=${{ secrets.IMAGES_BUCKET }},IMAGES_BUCKET_PREFIX=${{ secrets.IMAGES_BUCKET_PREFIX }} \
+            --set-env-vars=BUCKET_VIEWER_SA_KEY_FILE_NAME=${{ secrets.BUCKET_VIEWER_SA_KEY_FILE_NAME }},NODE_ENV=production,BLOG_POSTS_BUCKET=${{ secrets.BLOG_POSTS_BUCKET }},SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME=${{ secrets.SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME }},PGHOST=${{ secrets.PGHOST }},PGPASSWORD=${{ secrets.PGPASSWORD }},PGPORT=${{ secrets.PGPORT }},PGSSLMODE=require,PGUSER=${{ secrets.PGUSER }},PGDATABASE=${{ secrets.PGDATABASE }},JWT_SECRET=${{ secrets.JWT_SECRET }},PUBSUB_USERS_TOPIC=${{ secrets.PUBSUB_USERS_TOPIC }},PUBSUB_PUBLISHER_SA_KEY_FILE_NAME=${{ secrets.PUBSUB_PUBLISHER_SA_KEY_FILE_NAME }},IMAGES_BUCKET=${{ secrets.IMAGES_BUCKET }},IMAGES_BUCKET_PREFIX=${{ secrets.IMAGES_BUCKET_PREFIX }} \
             --allow-unauthenticated

@@ -1,6 +1,6 @@
 {
   "name": "pips_web-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "api.yactouat.com",
   "main": "./dist/api.js",
   "scripts": {
