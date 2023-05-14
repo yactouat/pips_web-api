@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { PermissionDto } from "pips_shared/dist/dtos";
 import runPgQuery from "pips_shared/dist/functions/run-pg-query";
 import sendJsonResponse from "pips_shared/dist/functions/send-json-response";
 
@@ -15,6 +14,7 @@ import {
 } from "../constants";
 import logStructuredMess from "pips_shared/dist/functions/log-structured-mess";
 import getParsableReqBody from "pips_shared/dist/functions/get-parsable-req-body";
+import Permission from "../interfaces/permission";
 
 const checksUserCan = async (
   req: Request,
@@ -24,7 +24,7 @@ const checksUserCan = async (
   let userCan = false;
   const authedUser = JSON.parse(req.params.authedUser);
   let httpInfo = "";
-  const httpPermissionsMap = new Map<string, PermissionDto>();
+  const httpPermissionsMap = new Map<string, Permission>();
   // setting HTTP / permissions map
   httpPermissionsMap.set(READ_BLOG_POSTS_DRAFTS_HTTP_INFO, {
     action: "Read",

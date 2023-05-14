@@ -1,5 +1,12 @@
-import parseUserId from "pips_shared/dist/functions/parse-user-id";
 import { Request } from "express";
+
+const parseUserId = (userId: string | number | null): number | null => {
+  if (/^\d+$/.test(userId as string)) {
+    return parseInt(userId as string);
+  }
+  return null;
+};
+
 
 const getUserIdFromParams = (
   req: Request<

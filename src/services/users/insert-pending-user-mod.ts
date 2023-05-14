@@ -1,8 +1,8 @@
-import { PendingUserModificationDto } from "pips_shared/dist/dtos";
 import runPgQuery from "pips_shared/dist/functions/run-pg-query";
-import { PendingUserModificationType } from "pips_shared/dist/types";
 
 import hashUserPassword from "./hash-user-password";
+import PendingUserModification from "../../interfaces/pending-user-modification";
+import PendingUserModificationType from "../../types/PendingUserModificationType";
 
 /**
  *
@@ -10,12 +10,12 @@ import hashUserPassword from "./hash-user-password";
  *
  * @param {string} field the user modification to insert (email, password, etc.)
  * @param {string} value the value of the user modification to insert
- * @returns {Promise<PendingUserModificationDto>} the inserted user modification
+ * @returns {Promise<PendingUserModification>} the inserted user modification
  */
 const insertPendingUserMod = async (
   field: PendingUserModificationType,
   value: string
-): Promise<PendingUserModificationDto> => {
+): Promise<PendingUserModification> => {
   if (field == "password") {
     value = await hashUserPassword(value);
   }
@@ -23,7 +23,7 @@ const insertPendingUserMod = async (
     "INSERT INTO pending_user_modifications (field, value) VALUES ($1, $2) RETURNING id, field, value, created_at, committed_at",
     [field, value]
   );
-  const mod = insertUserModQueryRes.rows[0] as PendingUserModificationDto;
+  const mod = insertUserModQueryRes.rows[0] as PendingUserModification;
   return mod;
 };
 

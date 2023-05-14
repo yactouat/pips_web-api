@@ -1,4 +1,5 @@
-import { ActionType, ResourceType } from "pips_shared/dist/types";
+import ActionType from "../../types/ActionType";
+import ResourceType from "../../types/ResourceType";
 
 const validateAction = (action: string): action is ActionType => {
   return [

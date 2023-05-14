@@ -1,5 +1,5 @@
-import { UserDto } from "pips_shared/dist/dtos";
 import runPgQuery from "pips_shared/dist/functions/run-pg-query";
+import { UserDto } from "pips_shared/dist/dtos";
 
 import hashUserPassword from "./hash-user-password";
 

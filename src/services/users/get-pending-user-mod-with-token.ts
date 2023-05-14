@@ -1,9 +1,9 @@
-import { PendingUserModificationDto } from "pips_shared/dist/dtos";
 import runPgQuery from "pips_shared/dist/functions/run-pg-query";
+import PendingUserModification from "../../interfaces/pending-user-modification";
 
 const getPendingUserModWithToken = async (
   token: string
-): Promise<PendingUserModificationDto> => {
+): Promise<PendingUserModification> => {
   const getUserModIdQueryRes = await runPgQuery(
     `SELECT * 
          FROM pending_user_modifications 
@@ -12,7 +12,7 @@ const getPendingUserModWithToken = async (
          ORDER BY created_at DESC`,
     [token]
   );
-  const userMod = getUserModIdQueryRes.rows[0] as PendingUserModificationDto;
+  const userMod = getUserModIdQueryRes.rows[0] as PendingUserModification;
   return userMod;
 };
 
