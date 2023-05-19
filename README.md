@@ -1,50 +1,5 @@
 # pips_channel_personal-website_api
 
-<!-- TOC -->
-
-- [pips_channel_personal-website_api](#pips_channel_personal-website_api)
-  - [what is this ?](#what-is-this-)
-  - [stack](#stack)
-  - [GCP service accounts and roles/permissions](#gcp-service-accounts-and-rolespermissions)
-    - [Cloud Run Deployer](#cloud-run-deployer)
-  - [how to run and setup locally](#how-to-run-and-setup-locally)
-  - [CI/CD](#cicd)
-    - [secrets and env vars](#secrets-and-env-vars)
-    - [deploying to the GCP manually](#deploying-to-the-gcp-manually)
-  - [connecting to the Supabase Postgres instance](#connecting-to-the-supabase-postgres-instance)
-  - [Google Cloud PubSub](#google-cloud-pubsub)
-  - [API](#api)
-    - [API authentication and authorization](#api-authentication-and-authorization)
-    - [API resources](#api-resources)
-      - [blog posts](#blog-posts)
-        - [DELETE /blog-posts/:slug](#delete-blog-postsslug)
-        - [GET /blog-posts/drafts](#get-blog-postsdrafts)
-        - [GET /blog-posts/published](#get-blog-postspublished)
-        - [GET /blog-posts/drafts/:slug](#get-blog-postsdraftsslug)
-        - [GET /blog-posts/published/:slug](#get-blog-postspublishedslug)
-        - [POST /blog-posts](#post-blog-posts)
-      - [home route](#home-route)
-        - [GET /](#get-)
-      - [images](#images)
-        - [GET /images](#get-images)
-        - [POST /images](#post-images)
-      - [tokens](#tokens)
-        - [POST /tokens](#post-tokens)
-      - [users](#users)
-        - [DELETE /users/:id](#delete-usersid)
-        - [GET /users/:id](#get-usersid)
-        - [GET /users/:id/permissions](#get-usersidpermissions)
-        - [POST /users](#post-users)
-        - [POST /users/reset-password](#post-usersreset-password)
-        - [PUT /users/:id](#put-usersid)
-        - [PUT /users/:id/permissions](#put-usersidpermissions)
-        - [PUT /users/:id/process-token](#put-usersidprocess-token)
-  - [Contribution guidelines](#contribution-guidelines)
-  - [Code Viz](#code-viz)
-  - [Contributors](#contributors)
-
-<!-- /TOC -->
-
 ## what is this ?
 
 the server-side code that powers my PIPS (Portable Integrated Personal System) JSON API, this API is available @ <https://api.yactouat.com>
@@ -95,6 +50,12 @@ This is the result of a trial and error process, trying to set a service account
 - migrations are run by default with `npm run dev` (and also `start`)
 - to run the migrations afterwards, run `npm run migrate-db-dev`
 - this project is meant to have <https://github.com/yactouat/pips_channel_personal-website_webapp> as a front-end application
+- to use the Swagger editor locally =>
+
+  ```bash
+  docker pull swaggerapi/swagger-editor
+  docker run -d -p 80:8080 swaggerapi/swagger-editor
+  ```
 
 ## CI/CD
 
@@ -154,60 +115,6 @@ I created a topic to send a notification to when a new user is created. The topi
 ### API resources
 
 #### blog posts
-
-##### DELETE `/blog-posts/:slug`
-
-- requires a valid JWT token in the `Authorization` header of type `Bearer` and the permission `Delete:Blog_Posts`
-- 204 response with no content if successful
-
-##### GET `/blog-posts/drafts`
-
-- requires a valid JWT token in the `Authorization` header of type `Bearer` and the permission `Read:Blog_Posts_Drafts`
-- 200 response is an alphabetically sorted list of drafts blog posts metadata as in =>
-
-  ```json
-  {
-    "msg": "2 blog posts fetched",
-    "data": [
-      {
-        "date": "2021-01-01",
-        "slug": "blog-post",
-        "status": "draft",
-        "title": "blog post"
-      },
-      {
-        "date": "2021-01-02",
-        "slug": "newest-blog-post",
-        "status": "draft",
-        "title": "newest blog post"
-      }
-    ]
-  }
-  ```
-
-##### GET `/blog-posts/published`
-
-- 200 response is an alphabetically sorted list of published blog posts metadata as in =>
-
-  ```json
-  {
-    "msg": "2 blog posts fetched",
-    "data": [
-      {
-        "date": "2021-01-01",
-        "slug": "blog-post",
-        "status": "published",
-        "title": "blog post"
-      },
-      {
-        "date": "2021-01-02",
-        "slug": "newest-blog-post",
-        "status": "published",
-        "title": "newest blog post"
-      }
-    ]
-  }
-  ```
 
 ##### GET `/blog-posts/drafts/:slug`
 

@@ -1,0 +1,270 @@
+# TODO add all error responses
+openapi: 3.0.3
+info:
+  title: api.yactouat.com specs - OpenAPI 3.0
+  description: |-
+    This is the OpenAPI 3.0 specification for the server-side code that powers my PIPS (Portable Integrated Personal System) JSON API, this API is available @ https://api.yactouat.com.  
+    The PIPS is an ambitious project: simply put, I want to control my digital life via an interface that is taylored-made by me. Of course, I'm open to any feedback to improve the system, make forks out of it, etc.
+    
+    Some useful links:
+    - [The GitHub repo](https://github.com/swagger-api/https://github.com/yactouat/pips_web-api)
+    - [The PIPS landing page](https://pips.yactouat.com/)
+    - [The PIPS projects](https://github.com/yactouat?tab=repositories&q=pips&type=&language=&sort=name)
+  contact:
+    email: yacine.touati.pro@gmail.com
+  license:
+    name: MIT
+    url: https://github.com/yactouat/pips_web-api/blob/main/LICENSE
+  version: 1.0.1
+externalDocs:
+  description: Find out more about api.yactouat.com
+  url: https://github.com/yactouat/pips_web-api#readme
+servers:
+  - url: https://api.yactouat.com
+tags:
+  - name: blog posts
+    description: tech content in the form of posts
+    externalDocs:
+      description: Find out more about the blog posts
+      url: http://blog.yactouat.com
+  - name: images
+    description: publicly available content images of the PIPS
+    externalDocs:
+      description: Find out more about the content images
+      url: https://api.yactouat.com/images
+  - name: tokens
+    description: JWT tokens from the PIPS system
+  - name: users
+    description: whoever uses the PIPS as a registered user
+    externalDocs:
+      description: sign up to the PIPS !
+      url: https://pips.yactouat.com/signup
+paths:
+  /blog-posts/{slug}:
+    delete:
+      tags:
+        - blog post
+      summary: Deletes a blog post by slug
+      description: | 
+        Deletes a blog post by slug. 
+        Requires the `Delete:Blog_Posts` user permission.
+      operationId: deleteBlogPost
+      parameters:
+        - name: slug
+          in: path
+          description: The slug of the blog post to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Blog post deleted successfully
+      security:
+        - api.yactouat.com_auth: []
+  /blog-posts/drafts:
+    get:
+      tags:
+        - blog post
+      summary: Retrieves a list of draft blog posts metadata
+      description: | 
+        Retrieves a list of draft blog posts metadata.
+        Alphabetically sorted by slug.
+        Requires the `Read:Blog_Posts_Drafts` user permission.
+      operationId: getDraftBlogPosts
+      responses:
+        '200':
+          description: List of draft blog posts metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message indicating the number of blog posts fetched
+                    example: 2 blog posts fetched
+                  data:
+                    $ref: '#/components/schemas/BlogPostsMetaList'
+      security:
+        - api.yactouat.com_auth: []
+  /blog-posts/drafts/{slug}:
+    get:
+      tags:
+        - blog post
+      summary: Retrieves a list of draft blog posts metadata
+      parameters:
+        - name: slug
+          in: path
+          description: Slug of the draft blog post to retrieve
+          required: true
+          schema:
+            type: string
+      description: | 
+        Retrieves a single draft blog post contents and metadata.
+        Requires the `Read:Blog_Posts_Drafts` user permission.
+      operationId: getDraftBlogPost
+      responses:
+        '200':
+          description: List of draft blog posts metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message indicating the number of blog posts fetched
+                    example: 2 blog posts fetched
+                  data:
+                    $ref: '#/components/schemas/BlogPostsMetaList'
+      security:
+        - api.yactouat.com_auth: []
+  /blog-posts/published:
+    get:
+      tags:
+        - blog post
+      summary: Retrieves a list of published blog posts metadata
+      description: | 
+        Retrieves a list of drapublishedft blog posts metadata.
+        Alphabetically sorted by slug.
+      operationId: getPublishedBlogPosts
+      responses:
+        '200':
+          description: List of published blog posts metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message indicating the number of blog posts fetched
+                    example: 2 blog posts fetched
+                  data:
+                    $ref: '#/components/schemas/BlogPostsMetaList'
+  /blog-posts:
+    post:
+      tags:
+        - blog post
+      summary: Creates a new draft or published blog post
+      description: | 
+        Creates a new draft or published blog post.
+        Requires the `Create:Blog_Posts` user permission.
+      operationId: createBlogPost
+      requestBody:
+        $ref: '#/components/requestBodies/BlogPost'
+      responses:
+        '201':
+          description: Draft or published blog post created in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - msg
+                  - data
+                properties:
+                  msg:
+                    type: string
+                    description: Response message.
+                    example: my-blog-post post uploaded
+                  data:
+                    $ref: '#/components/schemas/BlogPost'     
+        '403':
+          description: User is forbidden to create the blog post
+      security:
+        - api.yactouat.com_auth: []
+components:
+  schemas:
+    BlogPost:
+      type: object
+      required:
+        - contents
+        - date
+        - slug
+        - status
+        - title
+      properties:
+        contents:
+          type: string
+          description: The Markdown contents of the blog post.
+          example: "## my blog post contents"
+        date:
+          type: string
+          format: date
+          description: The date of the blog post.
+          example: 2021-01-02
+        slug:
+          type: string
+          description: The slug of the blog post.
+          example: my-blog-post
+        status:
+          type: string
+          description: The status of the blog post.
+          enum: [draft, published]
+        title:
+          type: string
+          description: The title of the blog post.
+          example: My Blog Post
+    BlogPostsMetaList:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            description: The date of the blog post
+          slug:
+            type: string
+            description: The slug of the blog post
+          status:
+            type: string
+            description: The status of the blog post
+            enum: [draft, published]
+          title:
+            type: string
+            description: The title of the blog post
+      example:
+        - date: "2021-01-01"
+          slug: "blog-post"
+          status: "published"
+          title: "blog post"
+        - date: "2021-01-02"
+          slug: "newest-blog-post"
+          status: "draft"
+          title: "newest blog post"
+  requestBodies:
+    BlogPost:
+      description: Blog post object that needs to be created
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - contents
+              - status
+              - slug
+            properties:
+              contents:
+                type: string
+                description: The contents of the blog post.
+                example: "## my blog post contents"
+              initialStatus:
+                type: string
+                description: The initial status of the blog post. Optional, specified if post requires status change.
+                enum: [draft, published]
+              status:
+                type: string
+                description: The status of the blog post.
+                enum: [draft, published]
+              slug:
+                type: string
+                description: | 
+                  The slug of the blog post.
+                  Must be unique in the system.
+                example: my-blog-post
+  securitySchemes:
+    api.yactouat.com_auth:           
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
