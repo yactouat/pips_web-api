@@ -1,4 +1,3 @@
-# TODO add all error responses
 openapi: 3.0.3
 info:
   title: api.yactouat.com specs - OpenAPI 3.0
@@ -59,8 +58,66 @@ paths:
       responses:
         '204':
           description: Blog post deleted successfully
+        '401':
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of deleting the blog post is forbidden
+                      since the user has not the required `Delete:Blog_Posts` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: Post to delete not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the blog post to delete was not found.
+                    example: my article blog post to delete not found
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side while deleting the post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side while deleting the post
+                  data: 
+                    type: string
+                    description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
+# TODO add all error responses starting this route
   /blog-posts/drafts:
     get:
       tags:
