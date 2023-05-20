@@ -43,7 +43,7 @@ paths:
     delete:
       tags:
         - blog post
-      summary: Deletes a blog post by slug
+      summary: Deletes a blog post by slug, whether it is a draft or a published post
       description: | 
         Deletes a blog post by slug. 
         Requires the `Delete:Blog_Posts` user permission.
@@ -117,7 +117,6 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
-# TODO add all error responses starting this route
   /blog-posts/drafts:
     get:
       tags:
@@ -142,8 +141,39 @@ paths:
                     example: 2 blog posts fetched
                   data:
                     $ref: '#/components/schemas/BlogPostsMetaList'
+        '401':
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of deleting the blog post is forbidden
+                      since the user has not the required `Delete:Blog_Posts` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
+# TODO add all error responses starting this route
   /blog-posts/drafts/{slug}:
     get:
       tags:
