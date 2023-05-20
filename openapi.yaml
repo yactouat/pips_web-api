@@ -165,20 +165,19 @@ paths:
                   msg:
                     type: string
                     description: | 
-                      A message informing that the action of deleting the blog post is forbidden
-                      since the user has not the required `Delete:Blog_Posts` permission.
+                      A message informing that the action of reading the draft blog posts is forbidden
+                      since the user has not the required `Read:Blog_Posts_Drafts` permission.
                     example: forbidden
                   data: 
                     type: string
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
-# TODO add all error responses starting this route
   /blog-posts/drafts/{slug}:
     get:
       tags:
         - blog post
-      summary: Retrieves a list of draft blog posts metadata
+      summary: Retrieves a draft blog post contents and metadata
       parameters:
         - name: slug
           in: path
@@ -200,12 +199,57 @@ paths:
                 properties:
                   msg:
                     type: string
-                    description: A message indicating the number of blog posts fetched
-                    example: 2 blog posts fetched
+                    description: A message indicating that the post has been fetched
+                    example: my-slugged-post blog post data fetched
                   data:
-                    $ref: '#/components/schemas/BlogPostsMetaList'
+                    $ref: '#/components/schemas/BlogPost'
+        '401':
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of reading the requested draft blog post is forbidden
+                      since the user has not the required `Read:Blog_Posts_Drafts` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: Requested draft post not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the blog requested draft post was not found.
+                    example: my-slugged-post blog post data not found
+                  data: 
+                    type: string
+                    description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
+  # TODO add all error responses starting this route
   /blog-posts/published:
     get:
       tags:
