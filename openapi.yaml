@@ -249,14 +249,13 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
-  # TODO add all error responses starting this route
   /blog-posts/published:
     get:
       tags:
         - blog post
       summary: Retrieves a list of published blog posts metadata
       description: | 
-        Retrieves a list of drapublishedft blog posts metadata.
+        Retrieves a list of published blog posts metadata.
         Alphabetically sorted by slug.
       operationId: getPublishedBlogPosts
       responses:
@@ -273,6 +272,7 @@ paths:
                     example: 2 blog posts fetched
                   data:
                     $ref: '#/components/schemas/BlogPostsMetaList'
+  # TODO add all error responses starting this route
   /blog-posts:
     post:
       tags:
