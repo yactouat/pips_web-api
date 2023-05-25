@@ -15,8 +15,6 @@
     - [API authentication and authorization](#api-authentication-and-authorization)
     - [API resources](#api-resources)
       - [blog posts](#blog-posts)
-        - [GET `/blog-posts/drafts/:slug`](#get-blog-postsdraftsslug)
-        - [GET `/blog-posts/published/:slug`](#get-blog-postspublishedslug)
         - [POST `/blog-posts`](#post-blog-posts)
       - [home route](#home-route)
         - [GET `/`](#get-)
@@ -87,6 +85,14 @@ This is the result of a trial and error process, trying to set a service account
 - run `npm run dev` to start the server on port 8080
 - `docker compose up -d` will start a local postgres instance and a `pgAdmin` instance
 - migrations are run by default with `npm run dev` (and also `start`)
+- to be enable to run the migrations, you need to create a `.env` file at the root of the project, and add the following env vars:
+
+  ```bash
+  # .env
+  PGDATABASE=api
+  PGPASSWORD=pwd
+  PGUSER=usr
+  ```
 - to run the migrations afterwards, run `npm run migrate-db-dev`
 - this project is meant to have <https://github.com/yactouat/pips_channel_personal-website_webapp> as a front-end application
 - to use the Swagger editor locally =>
@@ -154,45 +160,6 @@ I created a topic to send a notification to when a new user is created. The topi
 ### API resources
 
 #### blog posts
-
-##### GET `/blog-posts/drafts/:slug`
-
-- response is the searched draft blog post data as in =>
-
-  ```json
-  {
-    "msg": "newest-blog-post blog post data fetched",
-    "data": {
-      "contents": "# this is the markdown contents of this blog post",
-      "date": "2021-01-02",
-      "slug": "newest-blog-post",
-      "status": "published",
-      "title": "newest blog post"
-    }
-  }
-  ```
-
-- please note each of this JSON item's props, other than `contents`, are retrieved from the meta data of the blog post file; so feel free to tweak these other props to your needs
-- a blog post that is not found will return a 404
-
-##### GET `/blog-posts/published/:slug`
-
-- response is the searched published blog post data as in =>
-
-  ```json
-  {
-    "msg": "newest-blog-post blog post data fetched",
-    "data": {
-      "contents": "# this is the markdown contents of this blog post",
-      "date": "2021-01-02",
-      "slug": "newest-blog-post",
-      "status": "published",
-      "title": "newest blog post"
-    }
-  }
-  ```
-
-- a blog post that is not found will return a 404
 
 ##### POST `/blog-posts`
 
