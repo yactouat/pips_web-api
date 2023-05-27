@@ -21,7 +21,6 @@ usersRouter.delete(
 usersRouter.get(
   "/:id",
   validatesUserIdParamMiddleware,
-  checksValidationResultMiddleware,
   validatesJwtTokenMiddleware,
   usersController.getUser
 );
@@ -30,7 +29,6 @@ usersRouter.get(
   "/:id/permissions",
   validatesUserIdParamMiddleware,
   validatesJwtTokenMiddleware,
-  checksValidationResultMiddleware,
   checksUserCan,
   usersController.getUserPermissions
 );

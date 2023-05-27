@@ -550,7 +550,125 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
-# TODO specs for token/user resources
+  /tokens:
+    post:
+      tags:
+        - token
+      summary: Get a new access token.
+      description: | 
+        - Get a new access token.
+        - Requires the user to exist in the system.
+      operationId: createToken
+      requestBody:
+        description: Request body for creating a new access token.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User's email address.
+                  example: me@gmail.com
+                password:
+                  type: string
+                  description: User's password.
+                  example: testZaure!6684
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: JWT issued for that user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Response message.
+                    example: auth token issued
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The JWT token.
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lQGdtYWlsLmNvbSIsImlkIjoxLCJpYXQiOjE2ODUyMjEyMDAsImV4cCI6MTY4NTQyMjgwMH0.8rcYmpdTySuJcM-CGu0yar8zS7c8MCcGMWPjZWaxX20
+                      userId:
+                        type: integer
+                        description: The user's ID.
+                        example: 1
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                          example: Invalid value
+                        param:
+                          type: string
+                          example: password
+                        location:
+                          type: string
+                          example: body
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user mentioned in the attached credentials was not found.
+                    example: user not found
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: An error occurred while generating the token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of generating the token failed server-side.
+                    example: internal server error
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+# TODO specs for user resource
 components:
   schemas:
     BlogPost:
@@ -613,6 +731,7 @@ components:
   requestBodies:
     BlogPost:
       description: Blog post object that needs to be created.
+      required: true
       content:
         application/json:
           schema:
@@ -642,6 +761,7 @@ components:
                 example: my-blog-post
     Image:
       description: Image that needs to be uploaded to the PIPS system.
+      required: true
       content:
         application/json:
           schema:

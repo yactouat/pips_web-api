@@ -12,16 +12,10 @@ import {
   USER_NOT_FOUND,
 } from "../constants";
 import signJwtToken from "../jwt/sign-jwt-token";
-import sendValidationErrorRes from "../send-validator-error-res";
 import logStructuredMess from "pips_shared/dist/functions/log-structured-mess";
 import getParsableReqBody from "pips_shared/dist/functions/get-parsable-req-body";
 
 export const getJWTAuthToken = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    sendValidationErrorRes(res, errors);
-    return;
-  }
   let token = "";
   let authed = false;
   const inputPassword = req.body.password;
