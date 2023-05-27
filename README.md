@@ -16,7 +16,6 @@
     - [API resources](#api-resources)
       - [images](#images)
         - [GET `/images`](#get-images)
-        - [POST `/images`](#post-images)
       - [tokens](#tokens)
         - [POST `/tokens`](#post-tokens)
       - [users](#users)
@@ -90,7 +89,7 @@ This is the result of a trial and error process, trying to set a service account
   PGUSER=usr
   ```
 - to run the migrations afterwards, run `npm run migrate-db-dev`
-- this project is meant to have <https://github.com/yactouat/pips_channel_personal-website_webapp> as a front-end application
+- this project is meant to have <https://github.com/yactouat/pips_blog.yactouat.com> as a front-end application
 
 ### dev services
 
@@ -151,33 +150,6 @@ I created a topic to send a notification to when a new user is created. The topi
   "data": ["image-1.png", "image-2.png"]
 }
 ```
-
-- we only support PNG images for now
-
-##### POST `/images`
-
-- requires a valid JWT token in the `Authorization` header of type `Bearer`
-- posts a new image to the PIPS
-- user who makes the request must have the `Create:Images` permission otherwise will 403
-- input payload must look like =>
-
-  ```json
-  {
-    "base64Image": "xxx", // base64 encoded image
-    "imageName": "my-image.png" // image name
-  }
-  ```
-
-- should return a `201` =>
-
-```json
-{
-  "msg": "image upload success",
-  "data": null
-}
-```
-
-- we only support PNG images for now
 
 #### tokens
 

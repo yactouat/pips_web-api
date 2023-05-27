@@ -353,9 +353,6 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - msg
-                  - data
                 properties:
                   msg:
                     type: string
@@ -434,6 +431,104 @@ paths:
       security:
         - api.yactouat.com_auth: []
 # TODO specs for image/token/user resources
+  /images:
+    post:
+      tags:
+        - image
+      summary: Uploads a new image into the PIPS.
+      description: | 
+        - Uploads a new image into the PIPS.
+        - Requires the `Create:Images` user permission.
+        - Requires the user to be verified.
+        - Only supporting PNG's for now.
+      operationId: createImage
+      requestBody:
+        $ref: '#/components/requestBodies/Image'
+      responses:
+        '201':
+          description: Image uploaded in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Response message.
+                    example: image upload success
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                          example: Invalid value
+                        param:
+                          type: string
+                          example: base64Image
+                        location:
+                          type: string
+                          example: body
+        '401':
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to upload the image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of uploading the image is forbidden, since the user has not the required `Create:Images` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: An error occurred while uploading the image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of uploading the image failed server-side.
+                    example: image upload failed
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
 components:
   schemas:
     BlogPost:
@@ -495,7 +590,7 @@ components:
           title: "newest blog post"
   requestBodies:
     BlogPost:
-      description: Blog post object that needs to be created
+      description: Blog post object that needs to be created.
       content:
         application/json:
           schema:
@@ -523,6 +618,22 @@ components:
                   The slug of the blog post.
                   Must be unique in the system.
                 example: my-blog-post
+    Image:
+      description: Image that needs to be uploaded to the PIPS system.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - base64Image
+              - imageName
+            properties:
+              base64Image:
+                type: string
+                description: The base 64 encoded image.
+              imageName:
+                type: string
+                description: The image name with its extension (must be a png).
   securitySchemes:
     api.yactouat.com_auth:           
       type: http
