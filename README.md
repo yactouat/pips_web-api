@@ -13,7 +13,6 @@
   - [connecting to the Supabase Postgres instance](#connecting-to-the-supabase-postgres-instance)
   - [Google Cloud PubSub](#google-cloud-pubsub)
   - [API](#api)
-    - [API authentication and authorization](#api-authentication-and-authorization)
     - [API resources](#api-resources)
       - [images](#images)
         - [GET `/images`](#get-images)
@@ -137,21 +136,6 @@ I'm using PubSub to broadcast events across the PIPS system.
 I created a topic to send a notification to when a new user is created. The topic fully qualified name is set in the `PUBSUB_USERS_TOPIC` env var.
 
 ## API
-
-### API authentication and authorization
-
-- authentication is done using a JWT token
-- to get a token you must post your credentials to the `/tokens` endpoint
-- autorization is permissions-based, certain actions on resources are only allowed to users with the right permissions; the full list on possible actions on possible resources is available at <https://github.com/yactouat/pips_shared/blob/d9da5c4c70947f92fb87495a9ea3ebc4d2bff2c7/src/types.ts#L1>
-  - these are the currently implemented PIPS permissions:
-    - `Create:Blog_Posts`
-    - `Create:Images`
-    - `Delete:Blog_Posts`
-    - `Read:Blog_Posts_Drafts`
-    - `Read:Users_Permissions`
-    - `Update:Users_Permissions`
-- to request specific permissions on the PIPS, one should contact its administrator
-- permissions wont work if user's account is not verified
 
 ### API resources
 

@@ -5,10 +5,26 @@ info:
     This is the OpenAPI 3.0 specification for the server-side code that powers my PIPS (Portable Integrated Personal System) JSON API, this API is available @ https://api.yactouat.com.  
     The PIPS is an ambitious project: simply put, I want to control my digital life via an interface that is taylored-made by me. Of course, I'm open to any feedback to improve the system, make forks out of it, etc.
     
-    Some useful links:
+    ## API authentication and authorization
+
+    - authentication is done using JWT tokens
+    - to get a token you must post your credentials to the `/tokens` endpoint
+    - authorization is permissions-based, certain actions on resources are only allowed to users with the right permissions. These are the currently implemented PIPS permissions:
+      - `Create:Blog_Posts`
+      - `Create:Images`
+      - `Delete:Blog_Posts`
+      - `Read:Blog_Posts_Drafts`
+      - `Read:Users_Permissions`
+      - `Update:Users_Permissions`
+    - to request specific permissions on the PIPS, one should contact its administrator
+    - permissions wont work if for a user account that is not verified
+
+    ## Some useful links:
+
     - [The GitHub repo](https://github.com/swagger-api/https://github.com/yactouat/pips_web-api)
     - [The PIPS landing page](https://pips.yactouat.com/)
     - [The PIPS projects](https://github.com/yactouat?tab=repositories&q=pips&type=&language=&sort=name)
+
   contact:
     email: yacine.touati.pro@gmail.com
   license:
