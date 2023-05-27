@@ -21,19 +21,19 @@ externalDocs:
 servers:
   - url: https://api.yactouat.com
 tags:
-  - name: blog posts
+  - name: blog post
     description: tech content in the form of posts
     externalDocs:
       description: Find out more about the blog posts
       url: http://blog.yactouat.com
-  - name: images
-    description: publicly available content images of the PIPS
+  - name: image
+    description: publicly available content image of the PIPS
     externalDocs:
       description: Find out more about the content images
       url: https://api.yactouat.com/images
-  - name: tokens
-    description: JWT tokens from the PIPS system
-  - name: users
+  - name: token
+    description: JWT token from the PIPS system
+  - name: user
     description: whoever uses the PIPS as a registered user
     externalDocs:
       description: sign up to the PIPS !
@@ -45,8 +45,9 @@ paths:
         - blog post
       summary: Deletes a blog post by slug, whether it is a draft or a published post
       description: | 
-        Deletes a blog post by slug. 
-        Requires the `Delete:Blog_Posts` user permission.
+        - Deletes a blog post by slug. 
+        - Requires the `Delete:Blog_Posts` user permission.
+        - Requires the user to be verified.
       operationId: deleteBlogPost
       parameters:
         - name: slug
@@ -67,13 +68,13 @@ paths:
                 properties:
                   msg:
                     type: string
-                    description: A message informing that the user credentials are not valid
+                    description: A message informing that the user credentials are not valid for this specific action
                     example: unauthorized
                   data: 
                     type: string
                     description: null value since no data is returned
         '403':
-          description: User is not authorized
+          description: User is forbidden to delete blog posts
           content:
             application/json:
               schema:
@@ -82,8 +83,7 @@ paths:
                   msg:
                     type: string
                     description: | 
-                      A message informing that the action of deleting the blog post is forbidden
-                      since the user has not the required `Delete:Blog_Posts` permission.
+                      A message informing that the action of deleting the blog post is forbidden, since the user has not the required `Delete:Blog_Posts` permission.
                     example: forbidden
                   data: 
                     type: string
@@ -123,9 +123,10 @@ paths:
         - blog post
       summary: Retrieves a list of draft blog posts metadata
       description: | 
-        Retrieves a list of draft blog posts metadata.
-        Alphabetically sorted by slug.
-        Requires the `Read:Blog_Posts_Drafts` user permission.
+        - Retrieves a list of draft blog posts metadata.
+        - Alphabetically sorted by slug.
+        - Requires the `Read:Blog_Posts_Drafts` user permission.
+        - Requires the user to be verified.
       operationId: getDraftBlogPosts
       responses:
         '200':
@@ -150,13 +151,13 @@ paths:
                 properties:
                   msg:
                     type: string
-                    description: A message informing that the user credentials are not valid
+                    description: A message informing that the user credentials are not valid for this specific action
                     example: unauthorized
                   data: 
                     type: string
                     description: null value since no data is returned
         '403':
-          description: User is not authorized
+          description: User is forbidden to read draft blog posts
           content:
             application/json:
               schema:
@@ -165,8 +166,7 @@ paths:
                   msg:
                     type: string
                     description: | 
-                      A message informing that the action of reading the draft blog posts is forbidden
-                      since the user has not the required `Read:Blog_Posts_Drafts` permission.
+                      A message informing that the action of reading the draft blog posts is forbidden, since the user has not the required `Read:Blog_Posts_Drafts` permission.
                     example: forbidden
                   data: 
                     type: string
@@ -186,8 +186,9 @@ paths:
           schema:
             type: string
       description: | 
-        Retrieves a single draft blog post contents and metadata.
-        Requires the `Read:Blog_Posts_Drafts` user permission.
+        - Retrieves a single draft blog post contents and metadata.
+        - Requires the `Read:Blog_Posts_Drafts` user permission.
+        - Requires the user to be verified.
       operationId: getDraftBlogPost
       responses:
         '200':
@@ -212,13 +213,13 @@ paths:
                 properties:
                   msg:
                     type: string
-                    description: A message informing that the user credentials are not valid
+                    description: A message informing that the user credentials are not valid for this specific action
                     example: unauthorized
                   data: 
                     type: string
                     description: null value since no data is returned
         '403':
-          description: User is not authorized
+          description: User is forbidden to read the requested draft post
           content:
             application/json:
               schema:
@@ -227,8 +228,7 @@ paths:
                   msg:
                     type: string
                     description: | 
-                      A message informing that the action of reading the requested draft blog post is forbidden
-                      since the user has not the required `Read:Blog_Posts_Drafts` permission.
+                      A message informing that the action of reading the requested draft blog post is forbidden, since the user has not the required `Read:Blog_Posts_Drafts` permission.
                     example: forbidden
                   data: 
                     type: string
@@ -255,8 +255,8 @@ paths:
         - blog post
       summary: Retrieves a list of published blog posts metadata
       description: | 
-        Retrieves a list of published blog posts metadata.
-        Alphabetically sorted by slug.
+        - Retrieves a list of published blog posts metadata.
+        - Alphabetically sorted by slug.
       operationId: getPublishedBlogPosts
       responses:
         '200':
@@ -311,20 +311,22 @@ paths:
                 properties:
                   msg:
                     type: string
-                    description: A message informing that the blog requested draft post was not found.
+                    description: A message informing that the blog requested published post was not found.
                     example: my-slugged-post blog post data not found
                   data: 
                     type: string
                     description: null value since no data is returned
-  # TODO add all error responses starting this route + all other routes
   /blog-posts:
     post:
       tags:
         - blog post
       summary: Creates a new draft or published blog post
       description: | 
-        Creates a new draft or published blog post.
-        Requires the `Create:Blog_Posts` user permission.
+        - Creates a new draft or published blog post.
+        - Requires the `Create:Blog_Posts` user permission.
+        - Requires the user to be verified.
+        - Posts may be overwritten if they already exist but are older.
+        - Posts may me moved from draft to published if a status change is detected.
       operationId: createBlogPost
       requestBody:
         $ref: '#/components/requestBodies/BlogPost'
@@ -344,11 +346,78 @@ paths:
                     description: Response message.
                     example: my-blog-post post uploaded
                   data:
-                    $ref: '#/components/schemas/BlogPost'     
+                    $ref: '#/components/schemas/BlogPost'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                          example: Invalid value
+                        param:
+                          type: string
+                          example: contents
+                        location:
+                          type: string
+                          example: body
+        '401':
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
         '403':
-          description: User is forbidden to create the blog post
+          description: User is forbidden to create a blog post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of creating the blog post is forbidden, since the user has not the required `Create:Blog_Posts` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: An error occurred while creating the blog post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of creating the blog post failed server-side.
+                    example: an error occurred while creating the blog post
+                  data: 
+                    type: string
+                    description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
+# TODO specs for image/token/user resources
 components:
   schemas:
     BlogPost:

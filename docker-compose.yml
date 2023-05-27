@@ -26,3 +26,8 @@ services:
       - pgsql-vol:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  swagger:
+    image: swaggerapi/swagger-editor:v4.9.2
+    ports:
+      - 8082:8080

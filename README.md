@@ -6,6 +6,7 @@
   - [GCP service accounts and roles/permissions](#gcp-service-accounts-and-rolespermissions)
     - [Cloud Run Deployer](#cloud-run-deployer)
   - [how to run and setup locally](#how-to-run-and-setup-locally)
+    - [dev services](#dev-services)
   - [CI/CD](#cicd)
     - [secrets and env vars](#secrets-and-env-vars)
     - [deploying to the GCP manually](#deploying-to-the-gcp-manually)
@@ -14,10 +15,6 @@
   - [API](#api)
     - [API authentication and authorization](#api-authentication-and-authorization)
     - [API resources](#api-resources)
-      - [blog posts](#blog-posts)
-        - [POST `/blog-posts`](#post-blog-posts)
-      - [home route](#home-route)
-        - [GET `/`](#get-)
       - [images](#images)
         - [GET `/images`](#get-images)
         - [POST `/images`](#post-images)
@@ -95,12 +92,11 @@ This is the result of a trial and error process, trying to set a service account
   ```
 - to run the migrations afterwards, run `npm run migrate-db-dev`
 - this project is meant to have <https://github.com/yactouat/pips_channel_personal-website_webapp> as a front-end application
-- to use the Swagger editor locally =>
 
-  ```bash
-  docker pull swaggerapi/swagger-editor
-  docker run -d -p 80:8080 swaggerapi/swagger-editor
-  ```
+### dev services
+
+- with docker stack up, you have access to a `pgAdmin` instance @ <http://localhost:8081>
+- with docker stack up, you have access to a `swagger` instance @ <http://localhost:8082>, all you will need to do is to import the `api_docs.yaml` file within the UI
 
 ## CI/CD
 
@@ -158,63 +154,6 @@ I created a topic to send a notification to when a new user is created. The topi
 - permissions wont work if user's account is not verified
 
 ### API resources
-
-#### blog posts
-
-##### POST `/blog-posts`
-
-- requires a valid JWT token in the `Authorization` header of type `Bearer`
-- creates a new blog post in the PIPS
-- posts may be overwritten if they already exist but are older
-- posts may me moved from draft to published if a status change is detected
-- user who makes the request must have the `Create:Blog_Posts` permission otherwise will 403
-- input payload must look like =>
-
-  ```json
-  {
-    "contents": "## my blog post contents",
-    "initialStatus": "draft", // or "published" (optional, specified if post requires status change)
-    "status": "draft", // or "published"
-    "slug": "my-blog-post"
-  }
-  ```
-
-- should return a `201` =>
-
-```json
-{
-  "msg": "my-blog-post post uploaded",
-  "data": {
-    "contents": "## my blog post contents",
-    "date": "2021-01-02",
-    "slug": "my-blog-post",
-    "status": "published",
-    "title": "my blog post"
-  }
-}
-```
-
-- we only support PNG images for now
-
-#### home route
-
-##### GET `/`
-
-- should return a `200` =>
-
-```json
-{
-  "msg": "api.yactouat.com is available",
-  "data": {
-    "services": [
-      {
-        "service": "database",
-        "status": "up"
-      }
-    ]
-  }
-}
-```
 
 #### images
 
