@@ -430,8 +430,29 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
-# TODO specs for image/token/user resources
   /images:
+    get:
+      tags:
+        - image
+      summary: Get list of PIPS images names.
+      description: | 
+        - Get list of PIPS images names.
+      operationId: getImages
+      responses:
+        '200':
+          description: 'List of PIPS images'
+          content:
+              application/json:
+                schema:
+                  type: 'object'
+                  properties:
+                    msg:
+                      type: 'string'
+                    data:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                        example: 'image1.png'
     post:
       tags:
         - image
@@ -529,6 +550,7 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
+# TODO specs for token/user resources
 components:
   schemas:
     BlogPost:

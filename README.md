@@ -14,8 +14,6 @@
   - [Google Cloud PubSub](#google-cloud-pubsub)
   - [API](#api)
     - [API resources](#api-resources)
-      - [images](#images)
-        - [GET `/images`](#get-images)
       - [tokens](#tokens)
         - [POST `/tokens`](#post-tokens)
       - [users](#users)
@@ -137,19 +135,6 @@ I created a topic to send a notification to when a new user is created. The topi
 ## API
 
 ### API resources
-
-#### images
-
-##### GET `/images`
-
-- should return a `200` =>
-
-```json
-{
-  "msg": "X PIPS images fetched",
-  "data": ["image-1.png", "image-2.png"]
-}
-```
 
 #### tokens
 
