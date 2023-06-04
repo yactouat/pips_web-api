@@ -14,10 +14,6 @@
   - [Google Cloud PubSub](#google-cloud-pubsub)
   - [API](#api)
     - [API resources](#api-resources)
-      - [tokens](#tokens)
-        - [POST `/tokens`](#post-tokens)
-      - [users](#users)
-        - [DELETE `/users/:id`](#delete-usersid)
         - [GET `/users/:id`](#get-usersid)
         - [GET `/users/:id/permissions`](#get-usersidpermissions)
         - [POST `/users`](#post-users)
@@ -136,53 +132,6 @@ I created a topic to send a notification to when a new user is created. The topi
 
 ### API resources
 
-#### tokens
-
-##### POST `/tokens`
-
-- generates a JWT token for the user or a 401 if the action is not authorized
-- input payload must contains the user credentials =>
-
-  ```json
-  {
-    "email": "myemail@domain.com",
-    "password": "my-password"
-  }
-  ```
-
-- a success response looks like so =>
-
-```json
-{
-  "msg": "auth token issued",
-  "data": {
-    "token": "some.jwt.token"
-  }
-}
-```
-
-#### users
-
-##### DELETE `/users/:id`
-
-- saves a user profile deletion request in the system, and forwards it to the PIPS system
-- requires a valid JWT token in the `Authorization` header of type `Bearer`
-- success response should look like =>
-
-  ```json
-  {
-    "msg": "user deletion request sent",
-    "data": {
-      "id": "some-id",
-      "email": "myemail@domain.com",
-      "password": null,
-      "socialHandle": "my-social-handle",
-      "socialHandleType": "GitHub",
-      "verified": false,
-      "hasPendingModifications": true // optional
-    }
-  }
-  ```
 
 ##### GET `/users/:id`
 
