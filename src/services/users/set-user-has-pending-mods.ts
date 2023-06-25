@@ -20,9 +20,7 @@ const setUserHasPendingMods = async (
   `,
     [userId.toString()]
   );
-  if (parseInt(hasPendingModifications.rows[0].haspendingmodifications) > 0) {
-    user.hasPendingModifications = true;
-  }
+  user.hasPendingModifications = parseInt(hasPendingModifications.rows[0].haspendingmodifications) > 0;
   return user;
 };
 

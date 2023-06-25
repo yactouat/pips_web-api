@@ -14,7 +14,6 @@
   - [Google Cloud PubSub](#google-cloud-pubsub)
   - [API](#api)
     - [API resources](#api-resources)
-        - [GET `/users/:id`](#get-usersid)
         - [GET `/users/:id/permissions`](#get-usersidpermissions)
         - [POST `/users`](#post-users)
         - [POST `/users/reset-password`](#post-usersreset-password)
@@ -131,28 +130,6 @@ I created a topic to send a notification to when a new user is created. The topi
 ## API
 
 ### API resources
-
-
-##### GET `/users/:id`
-
-- returns the user data for the given id
-- requires a valid JWT token in the `Authorization` header of type `Bearer`
-- success response should look like =>
-
-  ```json
-  {
-    "msg": "user fetched",
-    "data": {
-      "id": "some-id",
-      "email": "myemail@domain.com",
-      "password": null,
-      "socialHandle": "my-social-handle",
-      "socialHandleType": "GitHub",
-      "verified": false,
-      "hasPendingModifications": true // optional
-    }
-  }
-  ```
 
 ##### GET `/users/:id/permissions`
 
