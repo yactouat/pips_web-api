@@ -47,6 +47,8 @@ tags:
     externalDocs:
       description: Find out more about the content images
       url: https://api.yactouat.com/images
+  - name: permission
+    description: a user's right in the system expressed in the pattern `action:resource`
   - name: token
     description: JWT token from the PIPS system
   - name: user
@@ -668,6 +670,106 @@ paths:
                   data: 
                     type: string
                     description: null value since no data is returned
+  # TODO specs for user resource
+  /users:
+    post:
+      tags:
+        - user
+      summary: Create a new user account.
+      description: | 
+        - Create a new user account.
+        - Email should not already exist in the system.
+        - User creation workflow marks the user as unverified on create.
+      operationId: createUser
+      requestBody:
+        description: Request body for creating a new user account.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User's email address.
+                password:
+                  type: string
+                  description: User's password.
+                socialHandle:
+                  type: string
+                  description: User's handle on the selected social media.
+                socialHandleType:
+                  type: string
+                  description: User's handle on the selected social media.
+                  enum: [GitHub, LinkedIn]
+      responses:
+        '201':
+          description: Response payload after successful account creation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account has been created.
+                    example: user created
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The JWT token.
+                        example: eyJhbGciOiJIUzIoNiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lQGdtYWlsLmNvbSIsImlkIjoxLCJpYXQiOjE2ODUyMjEyMDAsImV4cCI6MTY4NTQyMjgwMH0.8rcYmpdTySuJcM-CGu0yar8zS7c8MCcGMWPjZWaxX20                    
+                      user:
+                        $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '409':
+          description: User already exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: user already exists
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side while creating the user's account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side while creating the user's account.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
   /users/{id}:
     delete:
       tags:
@@ -770,7 +872,6 @@ paths:
                   msg:
                     type: string
                     description: Error on the backend side while sending the request to delete the user's account.
-                    example: user update failed
                   data: 
                     type: string
                     description: null value since no data is returned
@@ -869,7 +970,7 @@ paths:
   /users/{id}/permissions:
     get:
       tags:
-        - user
+        - permission
       summary: Get user's account permissions.
       description: |
         - User who makes the call needs the `Read:Users_Permissions` rights.
@@ -961,7 +1062,6 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
-# TODO specs for user resource
 components:
   schemas:
     BlogPost:
@@ -1029,6 +1129,7 @@ components:
           type: number
           format: int64
           nullable: true
+          example: 1
         email:
           type: string
           format: email

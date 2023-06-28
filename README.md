@@ -14,8 +14,6 @@
   - [Google Cloud PubSub](#google-cloud-pubsub)
   - [API](#api)
     - [API resources](#api-resources)
-        - [GET `/users/:id/permissions`](#get-usersidpermissions)
-        - [POST `/users`](#post-users)
         - [POST `/users/reset-password`](#post-usersreset-password)
         - [PUT `/users/:id`](#put-usersid)
         - [PUT `/users/:id/permissions`](#put-usersidpermissions)
@@ -131,35 +129,6 @@ I created a topic to send a notification to when a new user is created. The topi
 
 ### API resources
 
-##### GET `/users/:id/permissions`
-
-  ```json
-  {
-    "msg": "user permissions fetched",
-    "data": [
-      "read:blog_posts_drafts",
-      "create:images",
-      "create:blog_posts",
-      "delete:blog_posts",
-      "read:users_permissions"
-    ]
-  }
-  ```
-
-##### POST `/users`
-
-- creates a new user in the database, e.g. sign up
-- input payload must look like =>
-
-  ```json
-  {
-    "email": "myemail@domain.com",
-    "password": "my-password",
-    "socialhandle": "my-social-handle",
-    "socialhandletype": "GitHub" // or "LinkedIn"
-  }
-  ```
-
 - these are the password strength requirements =>
 
   ```js
@@ -178,27 +147,6 @@ I created a topic to send a notification to when a new user is created. The topi
    *    pointsForContainingSymbol: 10
    * */
   ```
-
-- success response should look like =>
-
-  ```json
-  {
-    "msg": "user created",
-    "data": {
-      "token": "some.jwt.token",
-      "user": {
-        "id": "some-id",
-        "email": "myemail@domain.com",
-        "password": null,
-        "socialHandle": "my-social-handle",
-        "socialHandleType": "GitHub",
-        "verified": false
-      }
-    }
-  }
-  ```
-
-- after the response has been issued to the client, the API sends a Pub/Sub message to a users resource topic to be listened to by other components of the PIPS system
 
 ##### POST `/users/reset-password`
 
