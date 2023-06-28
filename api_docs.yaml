@@ -19,6 +19,14 @@ info:
     - to request specific permissions on the PIPS, one should contact its administrator
     - permissions wont work if for a user account that is not verified
 
+    ### Password strength rules
+
+    - min length: 8
+    - min lowercase: 1
+    - min uppercase: 1
+    - min numbers: 1
+    - min symbols: 1
+
     ## Some useful links:
 
     - [The GitHub repo](https://github.com/swagger-api/https://github.com/yactouat/pips_web-api)
