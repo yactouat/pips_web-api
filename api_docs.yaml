@@ -779,7 +779,7 @@ paths:
     get:
       tags:
         - user
-      summary: Sends a request to get user's account data.
+      summary: Get user's account data.
       operationId: getUser
       parameters:
         - name: id
@@ -801,6 +801,101 @@ paths:
                     description: A message informing that the user account info has been fetched.
                   data: 
                     $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to request to get this account's data because it's not his/her own.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of getting the user account is forbidden, since it's not his/hers account.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account to get was not found.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+  /users/{id}/permissions:
+    get:
+      tags:
+        - user
+      summary: Get user's account permissions.
+      description: |
+        - User who makes the call needs the `Read:Users_Permissions` rights.
+        - This functionality is currently not scoped to the user's own account.
+      operationId: getUserPermissions
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User account information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account permissions have been fetched.
+                    example: user permissions fetched
+                  data: 
+                    $ref: '#/components/schemas/UserPermissions'
         '400':
           description: Invalid request
           content:
@@ -949,6 +1044,14 @@ components:
           nullable: true
         verified:
           type: boolean
+    UserPermissions:
+      type: array
+      items:
+        type: string
+        description: the ACTION:RESSOURCE permission
+      example:
+        - "read:blog_posts_drafts"
+        - "create:images"
   requestBodies:
     BlogPost:
       description: Blog post object that needs to be created.

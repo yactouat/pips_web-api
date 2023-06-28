@@ -133,11 +133,6 @@ I created a topic to send a notification to when a new user is created. The topi
 
 ##### GET `/users/:id/permissions`
 
-- requires a valid JWT token in the `Authorization` header of type `Bearer`
-- returns a user's permissions
-- user who makes the request must have the `Read:Users_Permissions` permission otherwise will 403
-- successful 200 response looks like so =>
-
   ```json
   {
     "msg": "user permissions fetched",
