@@ -85,6 +85,7 @@ usersRouter.put(
   usersController.updateUser
 );
 
+// TODO delete old implementation
 usersRouter.put(
   "/:id/process-token",
   validatesUserIdParamMiddleware,

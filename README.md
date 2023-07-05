@@ -14,7 +14,6 @@
   - [Google Cloud PubSub](#google-cloud-pubsub)
   - [API](#api)
     - [API resources](#api-resources)
-        - [POST `/users/reset-password`](#post-usersreset-password)
         - [PUT `/users/:id/permissions`](#put-usersidpermissions)
         - [PUT `/users/:id/process-token`](#put-usersidprocess-token)
   - [Contribution guidelines](#contribution-guidelines)
@@ -127,26 +126,6 @@ I created a topic to send a notification to when a new user is created. The topi
 ## API
 
 ### API resources
-
-##### POST `/users/reset-password`
-
-- saves an auth token for the given user in the database, and forwards it to the PIPS system
-- input payload must look like =>
-
-  ```json
-  {
-    "email": "myemail@domain.com"
-  }
-  ```
-
-- success response should look like, status code would be 201 =>
-
-  ```json
-  {
-    "msg": "password reset request sent",
-    "data": null
-  }
-  ```
 
 ##### PUT `/users/:id/permissions`
 

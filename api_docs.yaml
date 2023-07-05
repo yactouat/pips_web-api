@@ -1297,6 +1297,97 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
+  /users/{id}/token-auth:
+    put:
+      tags:
+        - user
+      summary: |
+        Allows the user to authenticate with a one time token.
+        The user can request this token when he/she has forgotten his/her password.
+        Token type must be `User_Authentication`
+      operationId: processToken
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user account.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/UserToken'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user's token has been consumed.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '401':
+          description: User unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that no user account was not found with the given email.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side.
+                  data: 
+                    type: string
+                    description: null value since no data is returned  
 components:
   schemas:
     BlogPost:
@@ -1434,6 +1525,25 @@ components:
               imageName:
                 type: string
                 description: The image name with its extension (must be a png).
+    UserToken:
+      description: User token for processing.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                description: The user's account email.
+              token:
+                type: string
+                description: The token sent to the user's email address.
+              tokenType:
+                type: string
+                description: The type of the token sent to the user's email address.
+                enum: [User_Authentication, User_Deletion, User_Modification, User_Verification]
   securitySchemes:
     api.yactouat.com_auth:           
       type: http
