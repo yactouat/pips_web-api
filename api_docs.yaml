@@ -1318,7 +1318,6 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/UserToken'
       responses:
-      # TODO test
         '200':
           description: Informative message.
           content:
@@ -1369,19 +1368,6 @@ paths:
                   data: 
                     type: string
                     description: null value since no data is returned
-        # '404':
-        #   description: User not found.
-        #   content:
-        #     application/json:
-        #       schema:
-        #         type: object
-        #         properties:
-        #           msg:
-        #             type: string
-        #             description: A message informing that no user account was not found with the given email.
-        #           data: 
-        #             type: string
-        #             description: null value since no data is returned
         # '500':
         #   description: Error on the backend side.
         #   content:
