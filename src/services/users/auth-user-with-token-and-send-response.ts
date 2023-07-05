@@ -21,6 +21,7 @@ const authUserWithTokenAndSendResponse = async (
                 SELECT t.id
                 FROM tokens t
                 WHERE t.token = $1
+                AND t.expired != 1
         ) RETURNING *`,
       [authtoken]
     );
