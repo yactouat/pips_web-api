@@ -15,7 +15,6 @@
   - [API](#api)
     - [API resources](#api-resources)
         - [POST `/users/reset-password`](#post-usersreset-password)
-        - [PUT `/users/:id`](#put-usersid)
         - [PUT `/users/:id/permissions`](#put-usersidpermissions)
         - [PUT `/users/:id/process-token`](#put-usersidprocess-token)
   - [Contribution guidelines](#contribution-guidelines)
@@ -146,41 +145,6 @@ I created a topic to send a notification to when a new user is created. The topi
   {
     "msg": "password reset request sent",
     "data": null
-  }
-  ```
-
-##### PUT `/users/:id`
-
-- updates an existing user
-- requires a valid JWT token in the `Authorization` header of type `Bearer`
-- input payload must look like =>
-
-  ```json
-  {
-    "email": "myemail@domain.com",
-    "password": "some-password", // optional
-    "socialhandle": "my-social-handle",
-    "socialhandletype": "GitHub" // or "LinkedIn"
-  }
-  ```
-
-- success response should look like =>
-
-  ```json
-  {
-    "msg": "user updated, some profile data modifications may require an additional confirmation", // "user fetched" if no fields require confirmation (such as socialhandle or socialhandletype)
-    "data": {
-      "token": "some.jwt.token",
-      "user": {
-        "id": "some-id",
-        "email": "myemail@domain.com",
-        "password": null,
-        "socialHandle": "my-social-handle",
-        "socialHandleType": "GitHub",
-        "verified": true,
-        "hasPendingModifications": true // optional
-      }
-    }
   }
   ```
 

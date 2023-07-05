@@ -571,11 +571,13 @@ paths:
       operationId: createToken
       requestBody:
         description: Request body for creating a new access token.
-        required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
               properties:
                 email:
                   type: string
@@ -585,9 +587,6 @@ paths:
                   type: string
                   description: User's password.
                   example: testZaure!6684
-              required:
-                - email
-                - password
       responses:
         '200':
           description: JWT issued for that user.
@@ -678,7 +677,6 @@ paths:
                   data: 
                     type: string
                     description: null value since no data is returned
-  # TODO specs for user resource
   /users:
     post:
       tags:
@@ -686,16 +684,20 @@ paths:
       summary: Create a new user account.
       description: | 
         - Create a new user account.
-        - Email should not already exist in the system.
+        - Email should be unique in the system.
         - User creation workflow marks the user as unverified on create.
       operationId: createUser
       requestBody:
         description: Request body for creating a new user account.
-        required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
+                - socialHandle
+                - socialHandleType
               properties:
                 email:
                   type: string
@@ -970,6 +972,151 @@ paths:
                   msg:
                     type: string
                     description: A message informing that the user account to get was not found.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+    put:
+      tags:
+        - user
+      summary: |
+        Update user's account data.
+        User should be verified to be able to update his/her own account.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user account.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User account data to update.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - socialHandle
+                - socialHandleType
+              properties:
+                email:
+                  type: string
+                  description: The email of the user account.
+                password:
+                  type: string
+                  description: |
+                    The password of the user account (optional).
+                    Should abide to the password strength rules defined in these specs.
+                    If the fields to update are the email and/or the password, a confirmation email will be sent to the user,
+                    and the user's account won't be updated right away.
+                socialHandle:
+                  type: string
+                  description: The social handle of the user account.
+                socialHandleType:
+                  type: string
+                  description: The social handle type of the user account.
+      responses:
+        '200':
+          description: User account information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account info has been updated.
+                  data: 
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to request to update this account's data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of updating the user account is forbidden.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account to update was not found.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '422':
+          description: No update to apply.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that there is no update to apply with the given data.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side.
                   data: 
                     type: string
                     description: null value since no data is returned
