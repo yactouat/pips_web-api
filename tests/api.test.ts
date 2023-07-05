@@ -4,15 +4,17 @@ import saveUserToken from "pips_shared/dist/functions/save-user-token";
 const request = require('supertest');
 const {API} = require('../src/api');
 
-beforeEach(async () => {
+const tearDown = async () => {
     await truncateXTable("users");
     await truncateXTable("tokens");
     await truncateXTable("tokens_users");
-});
+};
 
 describe("PUT /api/users/token-auth", () => {
 
     it("with a valid token and email, should return a 200 status code, a message, and a user payload", async () => {
+        await tearDown();
+        
         // arrange
         const user = await createTestUser();
         const token = await saveUserToken(user.email, "User_Authentication");
@@ -49,9 +51,12 @@ describe("PUT /api/users/token-auth", () => {
         expect(res.body.data.user.socialhandletype).toEqual("LinkedIn");
         expect(res.body.data.user).toHaveProperty('verified');
         expect(res.body.data.user.verified).toEqual(user.verified);
+
     });
 
     it("with a consumed token, should return a 401 status code, a message, and no payload", async () => {
+        await tearDown();
+        
         // arrange
         const user = await createTestUser();
         const token = await saveUserToken(user.email, "User_Authentication");
@@ -80,6 +85,8 @@ describe("PUT /api/users/token-auth", () => {
     });
 
     it("with a non existing user and a valid token, should return a 401 status code, a message, and no payload", async () => {
+        await tearDown();
+        
         // arrange
         const user = await createTestUser();
         const token = await saveUserToken(user.email, "User_Authentication");
