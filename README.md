@@ -15,7 +15,6 @@
   - [API](#api)
     - [API resources](#api-resources)
         - [PUT `/users/:id/permissions`](#put-usersidpermissions)
-        - [PUT `/users/:id/process-token`](#put-usersidprocess-token)
   - [Contribution guidelines](#contribution-guidelines)
   - [Code Viz](#code-viz)
   - [Contributors](#contributors)
@@ -79,6 +78,7 @@ This is the result of a trial and error process, trying to set a service account
   ```
 - to run the migrations afterwards, run `npm run migrate-db-dev`
 - this project is meant to have <https://github.com/yactouat/pips_blog.yactouat.com> as a front-end application
+- to test the app', you can run `npm run test` (this will also spin up a local postgres instance and run the migrations)
 
 ### dev services
 
@@ -148,47 +148,6 @@ I created a topic to send a notification to when a new user is created. The topi
     "data": null
   }
   ```
-
-##### PUT `/users/:id/process-token`
-
-- validates a user token; user tokens are always sent to the user via a private channel (such as an email), they are used for several purposes:
-  - to authenticate, for instance when a user forgot their password and wants to reset it
-  - to confirm sensitive profile data changes
-  - to delete the user account
-  - to verify the user's email address
-- requires a valid JWT token in the `Authorization` header of type `Bearer`
-- input payload must look like =>
-
-  ```json
-  {
-    "email": "myemail@domain.com",
-    "authtoken": "some-token" // field can also be `deletetoken` | `modifytoken` | `veriftoken`
-  }
-  ```
-
-- response may differ based on the token type =>
-
-  - auth, modify, and verify tokens:
-
-    ```json
-    {
-      "msg": "user fetched", // or "user updated, some profile data modifications may require an additional confirmation"
-      "data": {
-        "token": "some.jwt.token",
-        "user": {
-          "id": "some-id",
-          "email": "myemail@domain.com",
-          "password": null,
-          "socialHandle": "my-social-handle",
-          "socialHandleType": "GitHub",
-          "verified": true,
-          "hasPendingModifications": true // optional
-        }
-      }
-    }
-    ```
-
-  - delete token sends back a 204 response with no body if the token is valid
 
 ## Contribution guidelines
 

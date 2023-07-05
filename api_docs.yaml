@@ -1122,86 +1122,6 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
-  /users/reset-password:
-    post:
-      tags:
-        - user
-      summary: |
-        Send a password reset email to the user.
-      operationId: resetPassword
-      requestBody:
-        description: User account data to reset password.
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-              properties:
-                email:
-                  type: string
-                  description: The email of the user account.
-      responses:
-        '201':
-          description: Informative message.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    description: A message informing that the password reset email has been sent.
-                  data: 
-                    type: string
-                    description: null value since no data is returned
-        '400':
-          description: Invalid request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    example: invalid request
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        msg:
-                          type: string
-                        param:
-                          type: string
-                        location:
-                          type: string
-        '404':
-          description: User not found.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    description: A message informing that no user account was not found with the given email.
-                  data: 
-                    type: string
-                    description: null value since no data is returned
-        '500':
-          description: Error on the backend side.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    description: Error on the backend side.
-                  data: 
-                    type: string
-                    description: null value since no data is returned
   /users/{id}/permissions:
     get:
       tags:
@@ -1296,27 +1216,29 @@ paths:
                     type: string
                     description: null value since no data is returned
       security:
-        - api.yactouat.com_auth: []
-  /users/{id}/token-auth:
-    put:
+        - api.yactouat.com_auth: []  
+  /users/reset-password:
+    post:
       tags:
         - user
       summary: |
-        Allows the user to authenticate with a one time token.
-        The user can request this token when he/she has forgotten his/her password.
-        Token type must be `User_Authentication`
-      operationId: processToken
-      parameters:
-        - name: id
-          in: path
-          description: The id of the user account.
-          required: true
-          schema:
-            type: string
+        Send a password reset email to the user.
+      operationId: resetPassword
       requestBody:
-        $ref: '#/components/requestBodies/UserToken'
+        description: User account data to reset password.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  description: The email of the user account.
       responses:
-        '200':
+        '201':
+          description: Informative message.
           content:
             application/json:
               schema:
@@ -1324,7 +1246,7 @@ paths:
                 properties:
                   msg:
                     type: string
-                    description: A message informing that the user's token has been consumed.
+                    description: A message informing that the password reset email has been sent.
                   data: 
                     type: string
                     description: null value since no data is returned
@@ -1349,19 +1271,6 @@ paths:
                           type: string
                         location:
                           type: string
-        '401':
-          description: User unauthorized.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    example: unauthorized
-                  data: 
-                    type: string
-                    description: null value since no data is returned
         '404':
           description: User not found.
           content:
@@ -1387,7 +1296,105 @@ paths:
                     description: Error on the backend side.
                   data: 
                     type: string
-                    description: null value since no data is returned  
+                    description: null value since no data is returned
+  # TODO
+  /users/token-auth:
+    put:
+      tags:
+        - user
+      # TODO test
+      summary: |
+        Allows the user to authenticate with a one time token.
+        This token can be requested with a `users/reset-password` call.
+        Token type must be `User_Authentication`
+      operationId: processToken
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user account.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/UserToken'
+      responses:
+      # TODO test
+        '200':
+          description: Informative message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user is authenticated.
+                  data: 
+                    token:
+                      type: string
+                      description: The JWT token.
+                    user:
+                      $ref: '#/components/schemas/User'
+        # '400':
+        #   description: Invalid request
+        #   content:
+        #     application/json:
+        #       schema:
+        #         type: object
+        #         properties:
+        #           msg:
+        #             type: string
+        #             example: invalid request
+        #           data:
+        #             type: array
+        #             items:
+        #               type: object
+        #               properties:
+        #                 msg:
+        #                   type: string
+        #                 param:
+        #                   type: string
+        #                 location:
+        #                   type: string
+        # '401':
+        #   description: User unauthorized.
+        #   content:
+        #     application/json:
+        #       schema:
+        #         type: object
+        #         properties:
+        #           msg:
+        #             type: string
+        #             example: unauthorized
+        #           data: 
+        #             type: string
+        #             description: null value since no data is returned
+        # '404':
+        #   description: User not found.
+        #   content:
+        #     application/json:
+        #       schema:
+        #         type: object
+        #         properties:
+        #           msg:
+        #             type: string
+        #             description: A message informing that no user account was not found with the given email.
+        #           data: 
+        #             type: string
+        #             description: null value since no data is returned
+        # '500':
+        #   description: Error on the backend side.
+        #   content:
+        #     application/json:
+        #       schema:
+        #         type: object
+        #         properties:
+        #           msg:
+        #             type: string
+        #             description: Error on the backend side.
+        #           data: 
+        #             type: string
+        #             description: null value since no data is returned  
 components:
   schemas:
     BlogPost:
@@ -1540,10 +1547,6 @@ components:
               token:
                 type: string
                 description: The token sent to the user's email address.
-              tokenType:
-                type: string
-                description: The type of the token sent to the user's email address.
-                enum: [User_Authentication, User_Deletion, User_Modification, User_Verification]
   securitySchemes:
     api.yactouat.com_auth:           
       type: http
