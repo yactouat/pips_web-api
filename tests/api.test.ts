@@ -4,7 +4,7 @@ import saveUserToken from "pips_shared/dist/functions/save-user-token";
 const request = require('supertest');
 const {API} = require('../src/api');
 
-beforeAll(async () => {
+beforeEach(async () => {
     await truncateXTable("users");
     await truncateXTable("tokens");
     await truncateXTable("tokens_users");
@@ -50,5 +50,36 @@ describe("PUT /api/users/token-auth", () => {
         expect(res.body.data.user).toHaveProperty('verified');
         expect(res.body.data.user.verified).toEqual(user.verified);
     });
+
+    it("with a consumed token, should return a 401 status code, a message, and no payload", async () => {
+        // arrange
+        const user = await createTestUser();
+        const token = await saveUserToken(user.email, "User_Authentication");
+        await request(API)
+            .put(`/users/token-auth`)
+            .send({
+                email: user.email,
+                token: token
+            });
+
+        // act
+        // call the endpoint again with the same token
+        const res = await request(API)
+            .put(`/users/token-auth`)
+            .send({
+                email: user.email,
+                token: token
+            });
+
+        // assert
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('msg');
+        expect(res.body.msg).toEqual("unauthorized");
+        expect(res.body).toHaveProperty('data');
+        expect(res.body.data).not.toBe(null);
+    });
+
+    // it("with a valid token but the email of another user, should return a 401 status code, a message, and no payload", async () => {
+    // });
 
 });

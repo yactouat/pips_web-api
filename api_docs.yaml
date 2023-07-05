@@ -1356,19 +1356,19 @@ paths:
         #                   type: string
         #                 location:
         #                   type: string
-        # '401':
-        #   description: User unauthorized.
-        #   content:
-        #     application/json:
-        #       schema:
-        #         type: object
-        #         properties:
-        #           msg:
-        #             type: string
-        #             example: unauthorized
-        #           data: 
-        #             type: string
-        #             description: null value since no data is returned
+        '401':
+          description: User unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
         # '404':
         #   description: User not found.
         #   content:
