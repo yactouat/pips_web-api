@@ -53,6 +53,14 @@ usersRouter.post(
 );
 
 usersRouter.put(
+  "/token-auth",
+  body("email").isEmail(),
+  body("token").isString(),
+  checksValidationResultMiddleware,
+  usersController.authUserWithToken
+);
+
+usersRouter.put(
   "/:id",
   validatesUserIdParamMiddleware,
   body("email").isEmail(),

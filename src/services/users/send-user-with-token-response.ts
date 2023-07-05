@@ -4,17 +4,15 @@ import sendJsonResponse from "pips_shared/dist/functions/send-json-response";
 
 import signJwtToken from "../../jwt/sign-jwt-token";
 import setUserHasPendingMods from "./set-user-has-pending-mods";
-import { USER_FETCHED, USER_UPDATED_WITH_PENDING_MODS } from "../../constants";
+import { USER_FETCHED, USER_UPDATED } from "../../constants";
 
 const sendUserWithTokenResponse = async (
   email: string,
   res: Response,
-  updateRequiredTokenConfirmation: boolean = false
+  userUpdated: boolean = true
 ) => {
   let resMsg =
-    updateRequiredTokenConfirmation == false
-      ? USER_UPDATED_WITH_PENDING_MODS
-      : USER_FETCHED;
+    userUpdated ? USER_UPDATED: USER_FETCHED;
   let user = await getUserFromDbWithEmail(email);
   if (user == null) {
     sendJsonResponse(res, 500, "something went wrong");

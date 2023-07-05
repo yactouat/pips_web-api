@@ -40,6 +40,11 @@ import authUserWithTokenAndSendResponse from "../services/users/auth-user-with-t
 import logStructuredMess from "pips_shared/dist/functions/log-structured-mess";
 import getParsableReqBody from "pips_shared/dist/functions/get-parsable-req-body";
 
+export const authUserWithToken = async (req: Request, res: Response) => {
+  const { email, token } = req.body;
+  await authUserWithTokenAndSendResponse(res, email, token);
+};
+
 export const createUser = async (req: Request, res: Response) => {
   const userAlreadyExists = await getUserFromDbWithEmail(req.body.email);
   if (userAlreadyExists != null) {

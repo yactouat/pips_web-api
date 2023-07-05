@@ -41,7 +41,7 @@ const authUserWithTokenAndSendResponse = async (
     // meaning something went wrong with user auth
     sendJsonResponse(res, 401, "unauthorized");
   } else {
-    await sendUserWithTokenResponse(email, res);
+    await sendUserWithTokenResponse(email, res, false);
   }
 };
 
