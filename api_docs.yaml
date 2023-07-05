@@ -1122,6 +1122,86 @@ paths:
                     description: null value since no data is returned
       security:
         - api.yactouat.com_auth: []
+  /users/reset-password:
+    post:
+      tags:
+        - user
+      summary: |
+        Send a password reset email to the user.
+      operationId: resetPassword
+      requestBody:
+        description: User account data to reset password.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  description: The email of the user account.
+      responses:
+        '201':
+          description: Informative message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the password reset email has been sent.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that no user account was not found with the given email.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
   /users/{id}/permissions:
     get:
       tags:
