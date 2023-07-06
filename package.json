@@ -9,7 +9,7 @@
     "migrate-db": "NODE_ENV=production node ./dist/migrate-db.js",
     "migrate-db-dev": "NODE_ENV=development ts-node ./src/migrate-db.ts",
     "start": "npm run migrate-db && NODE_ENV=production node ./dist/api.js",
-    "test": "docker compose -f tests.docker-compose.yml up -d --remove-orphans && PGUSER=api PGPASSWORD=api PGDATABASE=api npm run migrate-db-dev && jest --clearCache && NODE_ENV=development IS_TEST=1 PGUSER=api PGPASSWORD=api PGDATABASE=api jest --detectOpenHandles --runInBand --forceExit"
+    "test": "sh ./test.sh"
   },
   "keywords": [],
   "author": "Yacine Touati <yacine.touati.pro@gmail.com>",
