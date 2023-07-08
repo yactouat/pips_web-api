@@ -1,8 +1,8 @@
+import {API} from  "../src/api";
 import { createTestUser, truncateXTable } from "./helpers";
+import { exec } from "child_process";
+import request from "supertest";
 import saveUserToken from "pips_shared/dist/functions/save-user-token";
-
-const request = require('supertest');
-const {API} = require('../src/api');
 
 const tearDown = async () => {
     await truncateXTable("users");
@@ -318,7 +318,41 @@ describe("PUT /api/users/token-auth", () => {
         expect(res.body.data[0].param).toEqual("token");
     });
 
-    // it("with db connectivity issues, should return a 500 status code, a message, and no payload", async () => {
-    // });
+    it("with db connectivity issues, should return a 500 status code, a message, and no payload", async () => {
+        await tearDown();
+        
+        // arrange
+        const user = await createTestUser();
+        const token = await saveUserToken(user.email, "User_Authentication");
+        // docker compose down
+        exec('docker compose down', async (err, stdout, stderr) => {
+            if (err) {
+              throw new Error("docker compose down failed");
+            }
+
+            // act
+            const res = await request(API)
+                .put(`/users/token-auth`)
+                .send({
+                    email: user.email,
+                    token: token
+                });
+
+            // assert
+            expect(res.statusCode).toEqual(500);
+            expect(res.body).toHaveProperty('msg');
+            expect(res.body.msg).toEqual("server error");
+            expect(res.body).toHaveProperty('data');
+            expect(res.body.data).toBeNull();
+
+            // tear down: docker compose up
+            exec('docker compose up -d', (err, stdout, stderr) => {
+                if (err) {
+                throw new Error("docker compose up failed");
+                }
+            });
+        });
+
+    });
 
 });
