@@ -153,8 +153,28 @@ describe("PUT /api/users/token-auth", () => {
         expect(res.body.data).toBe(null);
     });
 
-    // it("with a valid token but not of type `User_Authentication`, should return a 401 status code, a message, and no payload", async () => {
-    // });
+    it("with a valid token but not of type `User_Authentication`, should return a 401 status code, a message, and no payload", async () => {
+        await tearDown();
+        
+        // arrange
+        const user = await createTestUser();
+        const token = await saveUserToken(user.email, "User_Modification");
+
+        // act
+        const res = await request(API)
+            .put(`/users/token-auth`)
+            .send({
+                email: user.email,
+                token: token
+            });
+
+        // assert
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('msg');
+        expect(res.body.msg).toEqual("unauthorized");
+        expect(res.body).toHaveProperty('data');
+        expect(res.body.data).toBe(null);
+    });
 
     // it("with a missing token, should return a 400 status code, a message, and the expected payload", async () => {
     // });
