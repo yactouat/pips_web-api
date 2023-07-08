@@ -1297,7 +1297,6 @@ paths:
                   data: 
                     type: string
                     description: null value since no data is returned
-  # TODO
   /users/token-auth:
     put:
       tags:
@@ -1307,13 +1306,6 @@ paths:
         This token can be requested with a `users/reset-password` call.
         Token type must be `User_Authentication`
       operationId: processToken
-      parameters:
-        - name: id
-          in: path
-          description: The id of the user account.
-          required: true
-          schema:
-            type: string
       requestBody:
         $ref: '#/components/requestBodies/UserToken'
       responses:
@@ -1328,32 +1320,34 @@ paths:
                     type: string
                     description: A message informing that the user is authenticated.
                   data: 
-                    token:
-                      type: string
-                      description: The JWT token.
-                    user:
-                      $ref: '#/components/schemas/User'
-        # '400':
-        #   description: Invalid request
-        #   content:
-        #     application/json:
-        #       schema:
-        #         type: object
-        #         properties:
-        #           msg:
-        #             type: string
-        #             example: invalid request
-        #           data:
-        #             type: array
-        #             items:
-        #               type: object
-        #               properties:
-        #                 msg:
-        #                   type: string
-        #                 param:
-        #                   type: string
-        #                 location:
-        #                   type: string
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The JWT token.
+                      user:
+                        $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
         '401':
           description: User unauthorized.
           content:
@@ -1367,19 +1361,19 @@ paths:
                   data: 
                     type: string
                     description: null value since no data is returned
-        # '500':
-        #   description: Error on the backend side.
-        #   content:
-        #     application/json:
-        #       schema:
-        #         type: object
-        #         properties:
-        #           msg:
-        #             type: string
-        #             description: Error on the backend side.
-        #           data: 
-        #             type: string
-        #             description: null value since no data is returned  
+        '500':
+          description: Error on the backend side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side.
+                  data: 
+                    type: string
+                    description: null value since no data is returned  
 components:
   schemas:
     BlogPost:
