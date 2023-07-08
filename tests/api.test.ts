@@ -129,9 +129,49 @@ describe("PUT /api/users/token-auth", () => {
         expect(res.body.data).toBe(null);
     });
 
+    it("with a valid token but the email of another user, should return a 401 status code, a message, and no payload", async () => {
+        await tearDown();
+        
+        // arrange
+        const user = await createTestUser();
+        const user2 = await createTestUser("test2@gmail.com", "password", "handle2", "LinkedIn");
+        const token = await saveUserToken(user.email, "User_Authentication");
 
+        // act
+        const res = await request(API)
+            .put(`/users/token-auth`)
+            .send({
+                email: user2.email,
+                token: token
+            });
 
-    // it("with a valid token but the email of another user, should return a 401 status code, a message, and no payload", async () => {
+        // assert
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('msg');
+        expect(res.body.msg).toEqual("unauthorized");
+        expect(res.body).toHaveProperty('data');
+        expect(res.body.data).toBe(null);
+    });
+
+    // it("with a valid token but not of type `User_Authentication`, should return a 401 status code, a message, and no payload", async () => {
+    // });
+
+    // it("with a missing token, should return a 400 status code, a message, and the expected payload", async () => {
+    // });
+
+    // it("with a missing email, should return a 400 status code, a message, and the expected payload", async () => {
+    // });
+
+    // it("with an invalid email, should return a 400 status code, a message, and the expected payload", async () => {
+    // });
+
+    // it("with a null email, should return a 400 status code, a message, and the expected payload", async () => {
+    // });
+
+    // it("with a null token, should return a 400 status code, a message, and the expected payload", async () => {
+    // });
+
+    // it("with db connectivity issues, should return a 500 status code, a message, and no payload", async () => {
     // });
 
 });

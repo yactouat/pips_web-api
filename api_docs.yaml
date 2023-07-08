@@ -1302,7 +1302,6 @@ paths:
     put:
       tags:
         - user
-      # TODO test
       summary: |
         Allows the user to authenticate with a one time token.
         This token can be requested with a `users/reset-password` call.
