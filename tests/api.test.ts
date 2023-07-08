@@ -203,8 +203,33 @@ describe("PUT /api/users/token-auth", () => {
         expect(res.body.data[0].param).toEqual("token");
     });
 
-    // it("with a missing email, should return a 400 status code, a message, and the expected payload", async () => {
-    // });
+    it("with a missing email, should return a 400 status code, a message, and the expected payload", async () => {
+        await tearDown();
+        
+        // arrange
+        const user = await createTestUser();
+        const token = await saveUserToken(user.email, "User_Authentication");
+
+        // act
+        const res = await request(API)
+            .put(`/users/token-auth`)
+            .send({
+                token: token
+            });
+
+        // assert
+        expect(res.statusCode).toEqual(400);
+        expect(res.body).toHaveProperty('msg');
+        expect(res.body.msg).toEqual("invalid request");
+        expect(res.body).toHaveProperty('data');
+        expect(res.body.data).toHaveLength(1);
+        expect(res.body.data[0]).toHaveProperty("location");
+        expect(res.body.data[0].location).toEqual("body");
+        expect(res.body.data[0]).toHaveProperty("msg");
+        expect(res.body.data[0].msg).toEqual("Invalid value");
+        expect(res.body.data[0]).toHaveProperty("param");
+        expect(res.body.data[0].param).toEqual("email");
+    });
 
     // it("with an invalid email, should return a 400 status code, a message, and the expected payload", async () => {
     // });
