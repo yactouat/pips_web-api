@@ -5,6 +5,7 @@ import * as blogPostsController from "../controllers/blog-posts-controller";
 import checksUserCan from "../middlewares/checks-user-can";
 import validatesJwtTokenMiddleware from "../middlewares/validates-jwt-token-middleware";
 import validatesStatus from "../services/blog-posts/validatesStatus";
+import checksValidationResultMiddleware from "../middlewares/checks-validation-result-middleware";
 
 const blogPostsRouter = express.Router();
 
@@ -49,6 +50,7 @@ blogPostsRouter.post(
   body("status").custom((value) => {
     return validatesStatus(value);
   }),
+  checksValidationResultMiddleware,
   validatesJwtTokenMiddleware,
   checksUserCan,
   blogPostsController.createPost

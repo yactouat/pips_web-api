@@ -1,0 +1,1533 @@
+openapi: 3.0.3
+info:
+  title: api.yactouat.com specs - OpenAPI 3.0
+  description: |-
+    This is the OpenAPI 3.0 specification for the server-side code that powers my PIPS (Portable Integrated Personal System) JSON API, this API is available @ https://api.yactouat.com.  
+    The PIPS is an ambitious project: simply put, I want to control my digital life via an interface that is taylored-made by me. Of course, I'm open to any feedback to improve the system, make forks out of it, etc.
+    
+    ## API authentication and authorization
+
+    - authentication is done using JWT tokens
+    - to get a token you must post your credentials to the `/tokens` endpoint
+    - authorization is permissions-based, certain actions on resources are only allowed to users with the right permissions. These are the currently implemented PIPS permissions:
+      - `Create:Blog_Posts`
+      - `Create:Images`
+      - `Delete:Blog_Posts`
+      - `Read:Blog_Posts_Drafts`
+      - `Read:Users_Permissions`
+      - `Update:Users_Permissions`
+    - to request specific permissions on the PIPS, one should contact its administrator
+    - permissions wont work if for a user account that is not verified
+
+    ### Password strength rules
+
+    - min length: 8
+    - min lowercase: 1
+    - min uppercase: 1
+    - min numbers: 1
+    - min symbols: 1
+
+    ## Some useful links:
+
+    - [The GitHub repo](https://github.com/swagger-api/https://github.com/yactouat/pips_web-api)
+    - [The PIPS landing page](https://pips.yactouat.com/)
+    - [The PIPS projects](https://github.com/yactouat?tab=repositories&q=pips&type=&language=&sort=name)
+
+  contact:
+    email: yacine.touati.pro@gmail.com
+  license:
+    name: MIT
+    url: https://github.com/yactouat/pips_web-api/blob/main/LICENSE
+  version: 1.0.1
+externalDocs:
+  description: Find out more about api.yactouat.com
+  url: https://github.com/yactouat/pips_web-api#readme
+servers:
+  - url: https://api.yactouat.com
+tags:
+  - name: blog post
+    description: tech content in the form of posts
+    externalDocs:
+      description: Find out more about the blog posts
+      url: http://blog.yactouat.com
+  - name: image
+    description: publicly available content image of the PIPS
+    externalDocs:
+      description: Find out more about the content images
+      url: https://api.yactouat.com/images
+  - name: permission
+    description: a user's right in the system expressed in the pattern `action:resource`
+  - name: token
+    description: JWT token from the PIPS system
+  - name: user
+    description: whoever uses the PIPS as a registered user
+    externalDocs:
+      description: sign up to the PIPS !
+      url: https://pips.yactouat.com/signup
+paths:
+  /blog-posts/{slug}:
+    delete:
+      tags:
+        - blog post
+      summary: Deletes a blog post by slug, whether it is a draft or a published post
+      description: | 
+        - Deletes a blog post by slug. 
+        - Requires the `Delete:Blog_Posts` user permission.
+        - Requires the user to be verified.
+      operationId: deleteBlogPost
+      parameters:
+        - name: slug
+          in: path
+          description: The slug of the blog post to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Blog post deleted successfully
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to delete blog posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of deleting the blog post is forbidden, since the user has not the required `Delete:Blog_Posts` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: Post to delete not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the blog post to delete was not found.
+                    example: my article blog post to delete not found
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side while deleting the post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side while deleting the post
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+  /blog-posts/drafts:
+    get:
+      tags:
+        - blog post
+      summary: Retrieves a list of draft blog posts metadata
+      description: | 
+        - Retrieves a list of draft blog posts metadata.
+        - Alphabetically sorted by slug.
+        - Requires the `Read:Blog_Posts_Drafts` user permission.
+        - Requires the user to be verified.
+      operationId: getDraftBlogPosts
+      responses:
+        '200':
+          description: List of draft blog posts metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message indicating the number of blog posts fetched
+                    example: 2 blog posts fetched
+                  data:
+                    $ref: '#/components/schemas/BlogPostsMetaList'
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to read draft blog posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of reading the draft blog posts is forbidden, since the user has not the required `Read:Blog_Posts_Drafts` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+  /blog-posts/drafts/{slug}:
+    get:
+      tags:
+        - blog post
+      summary: Retrieves a draft blog post contents and metadata
+      parameters:
+        - name: slug
+          in: path
+          description: Slug of the draft blog post to retrieve
+          required: true
+          schema:
+            type: string
+      description: | 
+        - Retrieves a single draft blog post contents and metadata.
+        - Requires the `Read:Blog_Posts_Drafts` user permission.
+        - Requires the user to be verified.
+      operationId: getDraftBlogPost
+      responses:
+        '200':
+          description: List of draft blog posts metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message indicating that the post has been fetched
+                    example: my-slugged-post blog post data fetched
+                  data:
+                    $ref: '#/components/schemas/BlogPost'
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to read the requested draft post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of reading the requested draft blog post is forbidden, since the user has not the required `Read:Blog_Posts_Drafts` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: Requested draft post not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the blog requested draft post was not found.
+                    example: my-slugged-post blog post data not found
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+  /blog-posts/published:
+    get:
+      tags:
+        - blog post
+      summary: Retrieves a list of published blog posts metadata
+      description: | 
+        - Retrieves a list of published blog posts metadata.
+        - Alphabetically sorted by slug.
+      operationId: getPublishedBlogPosts
+      responses:
+        '200':
+          description: List of published blog posts metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message indicating the number of blog posts fetched
+                    example: 2 blog posts fetched
+                  data:
+                    $ref: '#/components/schemas/BlogPostsMetaList'
+  
+  /blog-posts/published/{slug}:
+    get:
+      tags:
+        - blog post
+      summary: Retrieves a published blog post contents and metadata
+      parameters:
+        - name: slug
+          in: path
+          description: Slug of the published blog post to retrieve
+          required: true
+          schema:
+            type: string
+      description: | 
+        Retrieves a single published blog post contents and metadata.
+      operationId: getPublishedBlogPost
+      responses:
+        '200':
+          description: List of published blog posts metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message indicating that the post has been fetched
+                    example: my-slugged-post blog post data fetched
+                  data:
+                    $ref: '#/components/schemas/BlogPost'
+        '404':
+          description: Requested draft post not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the blog requested published post was not found.
+                    example: my-slugged-post blog post data not found
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+  /blog-posts:
+    post:
+      tags:
+        - blog post
+      summary: Creates a new draft or published blog post
+      description: | 
+        - Creates a new draft or published blog post.
+        - Requires the `Create:Blog_Posts` user permission.
+        - Requires the user to be verified.
+        - Posts may be overwritten if they already exist but are older.
+        - Posts may me moved from draft to published if a status change is detected.
+      operationId: createBlogPost
+      requestBody:
+        $ref: '#/components/requestBodies/BlogPost'
+      responses:
+        '201':
+          description: Draft or published blog post created in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Response message.
+                    example: my-blog-post post uploaded
+                  data:
+                    $ref: '#/components/schemas/BlogPost'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                          example: Invalid value
+                        param:
+                          type: string
+                          example: contents
+                        location:
+                          type: string
+                          example: body
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to create a blog post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of creating the blog post is forbidden, since the user has not the required `Create:Blog_Posts` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: An error occurred while creating the blog post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of creating the blog post failed server-side.
+                    example: an error occurred while creating the blog post
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+  /images:
+    get:
+      tags:
+        - image
+      summary: Get list of PIPS images names.
+      description: | 
+        - Get list of PIPS images names.
+      operationId: getImages
+      responses:
+        '200':
+          description: 'List of PIPS images'
+          content:
+              application/json:
+                schema:
+                  type: 'object'
+                  properties:
+                    msg:
+                      type: 'string'
+                    data:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                        example: 'image1.png'
+    post:
+      tags:
+        - image
+      summary: Uploads a new image into the PIPS.
+      description: | 
+        - Uploads a new image into the PIPS.
+        - Requires the `Create:Images` user permission.
+        - Requires the user to be verified.
+        - Only supporting PNG's for now.
+      operationId: createImage
+      requestBody:
+        $ref: '#/components/requestBodies/Image'
+      responses:
+        '201':
+          description: Image uploaded in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Response message.
+                    example: image upload success
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                          example: Invalid value
+                        param:
+                          type: string
+                          example: base64Image
+                        location:
+                          type: string
+                          example: body
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to upload the image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of uploading the image is forbidden, since the user has not the required `Create:Images` permission.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: An error occurred while uploading the image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of uploading the image failed server-side.
+                    example: image upload failed
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+  /tokens:
+    post:
+      tags:
+        - token
+      summary: Get a new access token.
+      description: | 
+        - Get a new access token.
+        - Requires the user to exist in the system.
+      operationId: createToken
+      requestBody:
+        description: Request body for creating a new access token.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  description: User's email address.
+                  example: me@gmail.com
+                password:
+                  type: string
+                  description: User's password.
+                  example: testZaure!6684
+      responses:
+        '200':
+          description: JWT issued for that user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Response message.
+                    example: auth token issued
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The JWT token.
+                        example: eyJhbGciOiJIUzIoNiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lQGdtYWlsLmNvbSIsImlkIjoxLCJpYXQiOjE2ODUyMjEyMDAsImV4cCI6MTY4NTQyMjgwMH0.8rcYmpdTySuJcM-CGu0yar8zS7c8MCcGMWPjZWaxX20
+                      userId:
+                        type: integer
+                        description: The user's ID.
+                        example: 1
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                          example: Invalid value
+                        param:
+                          type: string
+                          example: password
+                        location:
+                          type: string
+                          example: body
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user mentioned in the attached credentials was not found.
+                    example: user not found
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: An error occurred while generating the token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of generating the token failed server-side.
+                    example: internal server error
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+  /users:
+    post:
+      tags:
+        - user
+      summary: Create a new user account.
+      description: | 
+        - Create a new user account.
+        - Email should be unique in the system.
+        - User creation workflow marks the user as unverified on create.
+      operationId: createUser
+      requestBody:
+        description: Request body for creating a new user account.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - socialHandle
+                - socialHandleType
+              properties:
+                email:
+                  type: string
+                  description: User's email address.
+                password:
+                  type: string
+                  description: User's password.
+                socialHandle:
+                  type: string
+                  description: User's handle on the selected social media.
+                socialHandleType:
+                  type: string
+                  description: User's handle on the selected social media.
+                  enum: [GitHub, LinkedIn]
+      responses:
+        '201':
+          description: Response payload after successful account creation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account has been created.
+                    example: user created
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The JWT token.
+                        example: eyJhbGciOiJIUzIoNiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lQGdtYWlsLmNvbSIsImlkIjoxLCJpYXQiOjE2ODUyMjEyMDAsImV4cCI6MTY4NTQyMjgwMH0.8rcYmpdTySuJcM-CGu0yar8zS7c8MCcGMWPjZWaxX20                    
+                      user:
+                        $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '409':
+          description: User already exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: user already exists
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side while creating the user's account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side while creating the user's account.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+  /users/{id}:
+    delete:
+      tags:
+        - user
+      summary: Sends a request to delete own user account.
+      description: | 
+        - This results in sending a server-side account deletion request to the user's email address.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: The id of one's own user account to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account deletion request sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account deletion request has been sent.
+                    example: user deletion request sent
+                  data: 
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to request to delete this account because it's not his/her own.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of deleting the user account is forbidden, since it's not his/hers account.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account to delete was not found.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side while sending the request to delete the user's account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side while sending the request to delete the user's account.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+    get:
+      tags:
+        - user
+      summary: Get user's account data.
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User account information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account info has been fetched.
+                  data: 
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to request to get this account's data because it's not his/her own.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of getting the user account is forbidden, since it's not his/hers account.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account to get was not found.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+    put:
+      tags:
+        - user
+      summary: |
+        Update user's account data.
+        User should be verified to be able to update his/her own account.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user account.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User account data to update.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - socialHandle
+                - socialHandleType
+              properties:
+                email:
+                  type: string
+                  description: The email of the user account.
+                password:
+                  type: string
+                  description: |
+                    The password of the user account (optional).
+                    Should abide to the password strength rules defined in these specs.
+                    If the fields to update are the email and/or the password, a confirmation email will be sent to the user,
+                    and the user's account won't be updated right away.
+                socialHandle:
+                  type: string
+                  description: The social handle of the user account.
+                socialHandleType:
+                  type: string
+                  description: The social handle type of the user account.
+      responses:
+        '200':
+          description: User account information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account info has been updated.
+                  data: 
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to request to update this account's data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of updating the user account is forbidden.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account to update was not found.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '422':
+          description: No update to apply.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that there is no update to apply with the given data.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []
+  /users/{id}/permissions:
+    get:
+      tags:
+        - permission
+      summary: Get user's account permissions.
+      description: |
+        - User who makes the call needs the `Read:Users_Permissions` rights.
+        - This functionality is currently not scoped to the user's own account.
+      operationId: getUserPermissions
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User account information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account permissions have been fetched.
+                    example: user permissions fetched
+                  data: 
+                    $ref: '#/components/schemas/UserPermissions'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '401':
+          description: User is not authorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user credentials are not valid for this specific action.
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '403':
+          description: User is forbidden to request to get this account's data because it's not his/her own.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: | 
+                      A message informing that the action of getting the user account is forbidden, since it's not his/hers account.
+                    example: forbidden
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user account to get was not found.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+      security:
+        - api.yactouat.com_auth: []  
+  /users/reset-password:
+    post:
+      tags:
+        - user
+      summary: |
+        Send a password reset email to the user.
+      operationId: resetPassword
+      requestBody:
+        description: User account data to reset password.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  description: The email of the user account.
+      responses:
+        '201':
+          description: Informative message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the password reset email has been sent.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that no user account was not found with the given email.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side.
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+  /users/token-auth:
+    put:
+      tags:
+        - user
+      summary: |
+        Allows the user to authenticate with a one time token.
+        This token can be requested with a `users/reset-password` call.
+        Token type must be `User_Authentication`
+      operationId: processToken
+      requestBody:
+        $ref: '#/components/requestBodies/UserToken'
+      responses:
+        '200':
+          description: Informative message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: A message informing that the user is authenticated.
+                  data: 
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The JWT token.
+                      user:
+                        $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: invalid request
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
+        '401':
+          description: User unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: unauthorized
+                  data: 
+                    type: string
+                    description: null value since no data is returned
+        '500':
+          description: Error on the backend side.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error on the backend side.
+                  data: 
+                    type: string
+                    description: null value since no data is returned  
+components:
+  schemas:
+    BlogPost:
+      type: object
+      required:
+        - contents
+        - date
+        - slug
+        - status
+        - title
+      properties:
+        contents:
+          type: string
+          description: The Markdown contents of the blog post.
+          example: "## my blog post contents"
+        date:
+          type: string
+          format: date
+          description: The date of the blog post.
+          example: 2021-01-02
+        slug:
+          type: string
+          description: The slug of the blog post.
+          example: my-blog-post
+        status:
+          type: string
+          description: The status of the blog post.
+          enum: [draft, published]
+        title:
+          type: string
+          description: The title of the blog post.
+          example: My Blog Post
+    BlogPostsMetaList:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            description: The date of the blog post
+          slug:
+            type: string
+            description: The slug of the blog post
+          status:
+            type: string
+            description: The status of the blog post
+            enum: [draft, published]
+          title:
+            type: string
+            description: The title of the blog post
+      example:
+        - date: "2021-01-01"
+          slug: "blog-post"
+          status: "published"
+          title: "blog post"
+        - date: "2021-01-02"
+          slug: "newest-blog-post"
+          status: "draft"
+          title: "newest blog post"
+    User:
+      description: User of the PIPS system.
+      type: object
+      properties:
+        id:
+          type: number
+          format: int64
+          nullable: true
+          example: 1
+        email:
+          type: string
+          format: email
+        hasPendingModifications:
+          type: boolean
+        socialHandle:
+          type: string
+        socialHandleType:
+          type: string
+          enum: ["GitHub", "LinkedIn"]
+        password:
+          type: string
+          nullable: true
+        verified:
+          type: boolean
+    UserPermissions:
+      type: array
+      items:
+        type: string
+        description: the ACTION:RESSOURCE permission
+      example:
+        - "read:blog_posts_drafts"
+        - "create:images"
+  requestBodies:
+    BlogPost:
+      description: Blog post object that needs to be created.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - contents
+              - status
+              - slug
+            properties:
+              contents:
+                type: string
+                description: The contents of the blog post.
+                example: "## my blog post contents"
+              initialStatus:
+                type: string
+                description: The initial status of the blog post. Optional, specified if post requires status change.
+                enum: [draft, published]
+              status:
+                type: string
+                description: The status of the blog post.
+                enum: [draft, published]
+              slug:
+                type: string
+                description: | 
+                  The slug of the blog post.
+                  Must be unique in the system.
+                example: my-blog-post
+    Image:
+      description: Image that needs to be uploaded to the PIPS system.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - base64Image
+              - imageName
+            properties:
+              base64Image:
+                type: string
+                description: The base 64 encoded image.
+              imageName:
+                type: string
+                description: The image name with its extension (must be a png).
+    UserToken:
+      description: User token for processing.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                description: The user's account email.
+              token:
+                type: string
+                description: The token sent to the user's email address.
+  securitySchemes:
+    api.yactouat.com_auth:           
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 

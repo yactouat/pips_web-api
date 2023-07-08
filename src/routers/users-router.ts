@@ -21,7 +21,6 @@ usersRouter.delete(
 usersRouter.get(
   "/:id",
   validatesUserIdParamMiddleware,
-  checksValidationResultMiddleware,
   validatesJwtTokenMiddleware,
   usersController.getUser
 );
@@ -30,7 +29,6 @@ usersRouter.get(
   "/:id/permissions",
   validatesUserIdParamMiddleware,
   validatesJwtTokenMiddleware,
-  checksValidationResultMiddleware,
   checksUserCan,
   usersController.getUserPermissions
 );
@@ -52,6 +50,14 @@ usersRouter.post(
   body("email").isEmail(),
   checksValidationResultMiddleware,
   usersController.resetPassword
+);
+
+usersRouter.put(
+  "/token-auth",
+  body("email").isEmail(),
+  body("token").isString(),
+  checksValidationResultMiddleware,
+  usersController.authUserWithToken
 );
 
 usersRouter.put(
@@ -87,6 +93,7 @@ usersRouter.put(
   usersController.updateUser
 );
 
+// TODO delete old implementation
 usersRouter.put(
   "/:id/process-token",
   validatesUserIdParamMiddleware,

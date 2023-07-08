@@ -1,0 +1,15 @@
+volumes:
+  pgsql-vol:
+
+services:
+  pgsql:
+    image: postgres:alpine3.18
+    restart: always
+    environment:
+      POSTGRES_DB: api
+      POSTGRES_PASSWORD: api
+      POSTGRES_USER: api
+    volumes:
+      - pgsql-vol:/var/lib/postgresql/data
+    ports:
+      - 5432:5432

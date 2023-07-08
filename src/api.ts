@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
 
-const API = express();
+export const API = express();
 API.use(cors());
 API.use(express.json({ limit: "20mb" })); // so we can post images as base64 strings
 
@@ -56,13 +56,15 @@ API.use("/images", imagesRouter);
 API.use("/tokens", tokensRouter);
 API.use("/users", usersRouter);
 
-const server = API.listen(8080, () => {
-  logStructuredMess(
-    "INFO",
-    "SERVER STARTED",
-    JSON.stringify({
-      port: 8080,
-    }),
-    SERVICE_NAME
-  );
-});
+if (!process.env.IS_TEST) {
+  const server = API.listen(8080, () => {
+    logStructuredMess(
+      "INFO",
+      "SERVER STARTED",
+      JSON.stringify({
+        port: 8080,
+      }),
+      SERVICE_NAME
+    );
+  });
+}

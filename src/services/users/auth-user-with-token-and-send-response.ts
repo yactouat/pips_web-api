@@ -15,16 +15,29 @@ const authUserWithTokenAndSendResponse = async (
   try {
     // expire auth token
     const expireTokenQueryRes = await runPgQuery(
-      `UPDATE tokens tu 
-            SET expired = 1 
-            WHERE tu.id = (
+      `UPDATE tokens t1 
+            SET expired = 1
+            FROM tokens_users tu
+            WHERE t1.id = (
                 SELECT t.id
                 FROM tokens t
                 WHERE t.token = $1
-        ) RETURNING *`,
-      [authtoken]
+                AND t.expired != 1
+            )
+            AND tu.type = 'user_authentication'
+            AND tu.user_id = (SELECT u.id FROM users u WHERE u.email = $2)
+        RETURNING *`,
+      [authtoken, email]
     );
     userHasBeenAuthed = expireTokenQueryRes.rows.length > 0;
+    if (process.env.IS_TEST) {
+      logStructuredMess(
+        "DEBUG",
+        "userHasBeenAuthed",
+        JSON.stringify(expireTokenQueryRes.rows),
+        SERVICE_NAME
+      );
+    }
   } catch (error) {
     logStructuredMess(
       "ERROR",
@@ -41,7 +54,7 @@ const authUserWithTokenAndSendResponse = async (
     // meaning something went wrong with user auth
     sendJsonResponse(res, 401, "unauthorized");
   } else {
-    await sendUserWithTokenResponse(email, res);
+    await sendUserWithTokenResponse(email, res, false);
   }
 };
 

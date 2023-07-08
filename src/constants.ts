@@ -27,12 +27,11 @@ export const USER_CREATED = "user created";
 export const USER_CREATION_FAILED = "user creation failed";
 export const USER_DELETED = "user deleted";
 export const USER_DELETION_REQUEST_SENT = "user deletion request sent";
-export const USER_FETCHED = "user fetched";
+export const USER_FETCHED = "user fetched successfully";
 export const USER_NOT_FOUND = "user not found";
 export const USER_NOT_VERIFIED = "user not verified";
 export const USER_PERMISSIONS_FETCHED = "user permissions fetched";
 export const USER_PERMISSIONS_UPDATED = "user permissions updated";
 export const USER_UPDATE_FAILED = "user update failed";
 export const USER_UPDATED = "user updated";
-export const USER_UPDATED_WITH_PENDING_MODS =
-  "user updated, some profile data modifications may require an additional confirmation";
+
