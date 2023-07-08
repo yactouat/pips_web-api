@@ -107,6 +107,29 @@ describe("PUT /api/users/token-auth", () => {
         expect(res.body.data).toBe(null);
     });
 
+    it("with an existing user and an invalid token, should return a 401 status code, a message, and no payload", async () => {
+        await tearDown();
+        
+        // arrange
+        const user = await createTestUser();
+
+        // act
+        const res = await request(API)
+            .put(`/users/token-auth`)
+            .send({
+                email: "test@gmail.com",
+                token: "BAD_TOKEN"
+            });
+
+        // assert
+        expect(res.statusCode).toEqual(401);
+        expect(res.body).toHaveProperty('msg');
+        expect(res.body.msg).toEqual("unauthorized");
+        expect(res.body).toHaveProperty('data');
+        expect(res.body.data).toBe(null);
+    });
+
+
 
     // it("with a valid token but the email of another user, should return a 401 status code, a message, and no payload", async () => {
     // });
